@@ -68,7 +68,6 @@ const saveDailySummary = (summary) => {
         return true; // Indicate success
     } catch (error) {
         console.error('Error saving daily summary:', error, 'Data:', summary);
-        // Retry with minimal data if quota exceeded
         if (error.name === 'QuotaExceededError') {
             console.warn('Quota exceeded, resetting storage');
             localStorage.removeItem('nutritionTrackerDailySummary');
@@ -301,6 +300,7 @@ if (document.getElementById('summary-table')) {
     const totalFat = document.getElementById('total-fat');
     const loadingMessage = document.getElementById('loading-message');
     const errorMessage = document.getElementById('error-message');
+    const fallbackMessage = document.getElementById('fallback-message');
     const clearEntriesButton = document.getElementById('clear-entries');
     let chartInstance = null; // Store chart instance to destroy it
 
@@ -316,6 +316,7 @@ if (document.getElementById('summary-table')) {
     const loadSummary = () => {
         if (loadingMessage) loadingMessage.style.display = 'block';
         if (errorMessage) errorMessage.style.display = 'none';
+        if (fallbackMessage) fallbackMessage.style.display = 'none';
         try {
             cleanupOldEntries();
             const today = new Date().toISOString().split('T')[0];
@@ -376,29 +377,32 @@ if (document.getElementById('summary-table')) {
                 chartInstance.destroy();
             }
             const ctx = document.getElementById('macro-chart').getContext('2d');
-            chartInstance = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Protein', 'Carbs', 'Fat'],
-                    datasets: [{
-                        data: [totals.protein, totals.carbs, totals.fat],
-                        backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
-                        borderColor: ['#ffffff', '#ffffff', '#ffffff'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', labels: { font: { size: 8 }, color: '#333' } },
-                        title: { display: true, text: 'Macros', font: { size: 10 }, color: '#333' }
+            if (ctx) {
+                chartInstance = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Protein', 'Carbs', 'Fat'],
+                        datasets: [{
+                            data: [totals.protein, totals.carbs, totals.fat],
+                            backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                            borderColor: ['#ffffff', '#ffffff', '#ffffff'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top', labels: { font: { size: 8 }, color: '#333' } },
+                            title: { display: true, text: 'Macros', font: { size: 10 }, color: '#333' }
+                        }
                     }
-                }
-            });
+                });
+            }
         } catch (error) {
             console.error('Error loading summary:', error);
             if (errorMessage) errorMessage.style.display = 'block';
+            if (fallbackMessage) fallbackMessage.style.display = 'block';
             if (chartInstance) {
                 chartInstance.destroy();
                 document.getElementById('macro-chart').style.display = 'none';
