@@ -14,6 +14,9 @@
     <main>
         <h2>Today’s Summary</h2>
         <section>
+            <div id="loading-message" style="display: none; font-size: 0.7rem; color: #2c3e50;">
+                Loading summary...
+            </div>
             <table id="summary-table">
                 <thead>
                     <tr>
@@ -41,7 +44,10 @@
             </table>
         </section>
         <section>
-            <canvas id="macro-chart"></canvas>
+            <canvas id="macro-chart" aria-label="Macronutrient distribution chart"></canvas>
+        </section>
+        <section>
+            <button id="clear-entries" style="background-color: #e74c3c; color: white; padding: 0.3rem; border: none; border-radius: 2px; font-size: 0.7rem; cursor: pointer; min-height: 44px;" aria-label="Clear all entries for today">Clear All Entries</button>
         </section>
         <div class="floating-toolbars">
             <a href="add-food.html" class="toolbar-btn add-food" aria-label="Add Food">➕ Add Food</a>
