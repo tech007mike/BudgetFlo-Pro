@@ -13,21 +13,21 @@
     <main>
         <h2>Add or Edit Food</h2>
         <form id="nutrition-form">
-            <input type="hidden" id="food-id">
+            <input type="hidden" id="food-id" value="">
             <label for="name">Item Name:</label>
-            <input type="text" id="name" required maxlength="100" aria-label="Food name">
+            <input type="text" id="name" required maxlength="100" value="" aria-label="Food name">
             <label for="amount">Amount:</label>
-            <input type="number" id="amount" step="0.01" min="0.01" required aria-label="Serving amount">
+            <input type="number" id="amount" step="0.01" min="0.01" required value="" aria-label="Serving amount">
             <label for="unit-type">Unit Type:</label>
-            <input type="text" id="unit-type" maxlength="20" required aria-label="Unit type">
+            <input type="text" id="unit-type" maxlength="20" required value="" aria-label="Unit type">
             <label for="kcals">Kcals:</label>
-            <input type="number" id="kcals" step="0.1" min="0" required aria-label="Calories">
+            <input type="number" id="kcals" step="0.1" min="0" required value="0" aria-label="Calories">
             <label for="protein">Protein (g):</label>
-            <input type="number" id="protein" step="0.1" min="0" required aria-label="Protein in grams">
+            <input type="number" id="protein" step="0.1" min="0" required value="0" aria-label="Protein in grams">
             <label for="carbs">Carbs (g):</label>
-            <input type="number" id="carbs" step="0.1" min="0" required aria-label="Carbs in grams">
+            <input type="number" id="carbs" step="0.1" min="0" required value="0" aria-label="Carbs in grams">
             <label for="fat">Fat (g):</label>
-            <input type="number" id="fat" step="0.1" min="0" required aria-label="Fat in grams">
+            <input type="number" id="fat" step="0.1" min="0" required value="0" aria-label="Fat in grams">
             <button type="submit">Save Food</button>
         </form>
         <h2>Saved Foods</h2>
