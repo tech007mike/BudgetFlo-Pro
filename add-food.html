@@ -10,23 +10,21 @@
 </head>
 <body>
     <header>
-        <h1>Nutrition Tracker</h1>
-        <button id="menu-btn" aria-label="Toggle menu">☰</button>
+        <h1>Add Food</h1>
     </header>
-    <nav id="menu" class="hidden">
-        <a href="index.html">Daily Summary</a>
-        <a href="nutrition-facts.html">Manage Foods</a>
-    </nav>
     <main>
         <h2>Add Food to Summary</h2>
         <form id="add-food-form">
             <label for="food-select">Select Food:</label>
             <select id="food-select" required aria-label="Select a food"></select>
-            <label for="quantity">Quantity (servings): <span id="quantity-value">1</span></label>
-            <input type="range" id="quantity" min="0.25" max="20" step="0.25" value="1" required aria-label="Quantity slider">
-            <button type="submit">Add Food</button>
+            <label for="quantity">Quantity: <span id="quantity-value">1</span></label>
+            <input type="range" id="quantity" min="0.25" max="20" step="0.25" value="1" aria-label="Quantity slider">
+            <button type="submit">Add to Summary</button>
         </form>
-        <a href="index.html">Back to Summary</a>
+        <div class="floating-toolbars">
+            <a href="index.html" class="toolbar-btn summary" aria-label="Back to Summary">📋 Summary</a>
+            <a href="nutrition-facts.html" class="toolbar-btn manage-foods" aria-label="Manage Foods">🍎 Manage Foods</a>
+        </div>
     </main>
     <script src="script.js"></script>
 </body>
