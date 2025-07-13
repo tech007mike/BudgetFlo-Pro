@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nutrition Tracker</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
@@ -17,6 +16,9 @@
         <section>
             <div id="loading-message" style="display: none; font-size: 0.7rem; color: #2c3e50;">
                 Loading summary...
+            </div>
+            <div id="fallback-message" style="display: none; font-size: 0.7rem; color: #e74c3c;">
+                Unable to load summary. Check connection or clear storage.
             </div>
             <table id="summary-table">
                 <thead>
@@ -44,7 +46,7 @@
                 </tfoot>
             </table>
             <div id="error-message" style="display: none; font-size: 0.7rem; color: #e74c3c;">
-                Error loading summary. Please try again.
+                Error: Failed to load or save summary. Clear storage or try again.
             </div>
         </section>
         <section>
