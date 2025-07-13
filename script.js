@@ -12,6 +12,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const userId = "user1"; // Fixed userId for single user, multi-device access
 
+
 // Global menu toggle
 document.addEventListener('DOMContentLoaded', () => {
     const menuBtn = document.getElementById('menu-btn');
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else {
         console.error('Menu button or menu not found:', { menuBtn, menu });
+        alert('Menu initialization failed. Check console for details.');
     }
 });
 
@@ -46,7 +48,7 @@ if (document.getElementById('nutrition-form')) {
             const snapshot = await db.collection('users').doc(userId).collection('foods').get();
             foodsBody.innerHTML = '';
             if (snapshot.empty) {
-                foodsBody.innerHTML = '<tr><td colspan="8">No foods added yet.</td></tr>';
+                foodsBody.innerHTML = '<tr><td colspan="8">No foods added yet. Add one above!</td></tr>';
                 return;
             }
             snapshot.forEach(doc => {
@@ -69,7 +71,7 @@ if (document.getElementById('nutrition-form')) {
             });
         } catch (error) {
             console.error('Error loading foods:', error);
-            foodsBody.innerHTML = '<tr><td colspan="8">Error loading foods.</td></tr>';
+            foodsBody.innerHTML = '<tr><td colspan="8">Error loading foods. Check Firebase config.</td></tr>';
         }
     };
 
@@ -321,16 +323,24 @@ if (document.getElementById('summary-table')) {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'top', labels: { font: { size: 10 }, color: '#333' } },
-                            title: { display: true, text: 'Macronutrient Breakdown', font: { size: 14 }, color: '#333' }
+                            legend: { position: 'top', labels: { font: { size: 8 }, color: '#333' } },
+                            title: { display: true, text: 'Macros', font: { size: 10 }, color: '#333' }
                         }
                     }
                 });
             } catch (error) {
                 console.error('Error rendering chart:', error);
+                document.getElementById('macro-chart').style.display = 'none';
             }
 
             snapshot.forEach(doc => {
+                const actionsBtn = document.querySelector(`#actions-menu-${doc.id}`)?.parentElement.querySelector('.actions-btn');
+                if (actionsBtn) {
+                    actionsBtn.addEventListener('click', () => toggleActionsMenu(doc.id));
+                } else {
+                    console.error('Actions button not found for ID:', doc.id);
+                }
+
                 const form = document.getElementById(`edit-summary-form-${doc.id}`);
                 const quantityInput = document.getElementById(`edit-quantity-${doc.id}`);
                 const quantityValue = document.getElementById(`edit-quantity-value-${doc.id}`);
@@ -368,14 +378,6 @@ if (document.getElementById('summary-table')) {
                     });
                 } else {
                     console.error('Edit form elements not found for doc:', doc.id);
-                }
-            });
-
-            // Attach actions menu toggle
-            snapshot.forEach(doc => {
-                const actionsBtn = document.querySelector(`#actions-menu-${doc.id}`).parentElement.querySelector('.actions-btn');
-                if (actionsBtn) {
-                    actionsBtn.addEventListener('click', () => toggleActionsMenu(doc.id));
                 }
             });
         } catch (error) {
