@@ -1,14 +1,52 @@
 // Helper functions for localStorage
-const getFoods = () => JSON.parse(localStorage.getItem('nutritionTrackerFoods')) || [];
-const saveFoods = (foods) => {
-    localStorage.setItem('nutritionTrackerFoods', JSON.stringify(foods));
-    window.dispatchEvent(new Event('storage')); // Trigger update across tabs
+const getFoods = () => {
+    try {
+        const foods = JSON.parse(localStorage.getItem('nutritionTrackerFoods')) || [];
+        console.log('Loaded foods:', foods);
+        return foods;
+    } catch (error) {
+        console.error('Error parsing foods from localStorage:', error);
+        return [];
+    }
 };
 
-const getDailySummary = () => JSON.parse(localStorage.getItem('nutritionTrackerDailySummary')) || [];
+const saveFoods = (foods) => {
+    try {
+        localStorage.setItem('nutritionTrackerFoods', JSON.stringify(foods));
+        console.log('Saved foods:', foods);
+        // Dispatch custom event for same-tab updates
+        window.dispatchEvent(new CustomEvent('foodsUpdated'));
+        // Dispatch storage event for other tabs
+        window.dispatchEvent(new Event('storage'));
+    } catch (error) {
+        console.error('Error saving foods to localStorage:', error);
+        alert('Failed to save foods.');
+    }
+};
+
+const getDailySummary = () => {
+    try {
+        const summary = JSON.parse(localStorage.getItem('nutritionTrackerDailySummary')) || [];
+        console.log('Loaded daily summary:', summary);
+        return summary;
+    } catch (error) {
+        console.error('Error parsing daily summary from localStorage:', error);
+        return [];
+    }
+};
+
 const saveDailySummary = (summary) => {
-    localStorage.setItem('nutritionTrackerDailySummary', JSON.stringify(summary));
-    window.dispatchEvent(new Event('storage')); // Trigger update across tabs
+    try {
+        localStorage.setItem('nutritionTrackerDailySummary', JSON.stringify(summary));
+        console.log('Saved daily summary:', summary);
+        // Dispatch custom event for same-tab updates
+        window.dispatchEvent(new CustomEvent('summaryUpdated'));
+        // Dispatch storage event for other tabs
+        window.dispatchEvent(new Event('storage'));
+    } catch (error) {
+        console.error('Error saving daily summary to localStorage:', error);
+        alert('Failed to save daily summary.');
+    }
 };
 
 // Nutrition Facts Page
@@ -88,7 +126,7 @@ if (document.getElementById('nutrition-form')) {
             alert('Item Name is required.');
             return;
         }
-        if (amount <= 0) {
+        if (isNaN(amount) || amount <= 0) {
             alert('Amount must be a positive number.');
             return;
         }
@@ -142,7 +180,8 @@ if (document.getElementById('nutrition-form')) {
         loadFoods();
     });
 
-    // Listen for storage changes
+    // Listen for updates
+    window.addEventListener('foodsUpdated', loadFoods);
     window.addEventListener('storage', loadFoods);
     loadFoods();
 }
@@ -178,7 +217,7 @@ if (document.getElementById('add-food-form')) {
             alert('Please select a food.');
             return;
         }
-        if (quantity <= 0) {
+        if (isNaN(quantity) || quantity <= 0) {
             alert('Quantity must be a positive number.');
             return;
         }
@@ -209,7 +248,8 @@ if (document.getElementById('add-food-form')) {
         window.location.href = 'index.html';
     });
 
-    // Listen for storage changes
+    // Listen for updates
+    window.addEventListener('foodsUpdated', loadFoodsDropdown);
     window.addEventListener('storage', loadFoodsDropdown);
     loadFoodsDropdown();
 }
@@ -348,7 +388,7 @@ if (document.getElementById('summary-table')) {
                         return s;
                     });
                     saveDailySummary(summary);
-                    loadSummary();
+                    // loadSummary() called via event listener
                 });
             }
         });
@@ -380,12 +420,3 @@ if (document.getElementById('summary-table')) {
         if (confirm('Are you sure you want to delete this entry?')) {
             let summary = getDailySummary();
             summary = summary.filter(s => s.id !== id);
-            saveDailySummary(summary);
-            loadSummary();
-        }
-    };
-
-    // Listen for storage changes
-    window.addEventListener('storage', loadSummary);
-    loadSummary();
-}
