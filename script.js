@@ -14,13 +14,11 @@ const saveFoods = (foods) => {
     try {
         localStorage.setItem('nutritionTrackerFoods', JSON.stringify(foods));
         console.log('Saved foods:', foods);
-        // Dispatch custom event for same-tab updates
         window.dispatchEvent(new CustomEvent('foodsUpdated'));
-        // Dispatch storage event for other tabs
-        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('storage')); // For cross-tab updates
     } catch (error) {
         console.error('Error saving foods to localStorage:', error);
-        alert('Failed to save foods.');
+        alert('Failed to save foods. Please try again.');
     }
 };
 
@@ -39,13 +37,11 @@ const saveDailySummary = (summary) => {
     try {
         localStorage.setItem('nutritionTrackerDailySummary', JSON.stringify(summary));
         console.log('Saved daily summary:', summary);
-        // Dispatch custom event for same-tab updates
         window.dispatchEvent(new CustomEvent('summaryUpdated'));
-        // Dispatch storage event for other tabs
-        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('storage')); // For cross-tab updates
     } catch (error) {
         console.error('Error saving daily summary to localStorage:', error);
-        alert('Failed to save daily summary.');
+        alert('Failed to save daily summary. Please try again.');
     }
 };
 
@@ -103,6 +99,7 @@ if (document.getElementById('nutrition-form')) {
         proteinInput.value = food.protein;
         carbsInput.value = food.carbs;
         fatInput.value = food.fat;
+        form.scrollIntoView({ behavior: 'smooth' });
     };
 
     window.deleteFood = (id) => {
@@ -202,11 +199,11 @@ if (document.getElementById('add-food-form')) {
         foodSelect.innerHTML = '<option value="">Select a food</option>';
         if (foods.length === 0) {
             foodSelect.innerHTML += '<option value="" disabled>No foods available</option>';
-            return;
+        } else {
+            foods.forEach(food => {
+                foodSelect.innerHTML += `<option value="${food.id}">${food.name} (${food.amount} ${food.unitType})</option>`;
+            });
         }
-        foods.forEach(food => {
-            foodSelect.innerHTML += `<option value="${food.id}">${food.name} (${food.amount} ${food.unitType})</option>`;
-        });
     };
 
     form.addEventListener('submit', (e) => {
@@ -254,14 +251,14 @@ if (document.getElementById('add-food-form')) {
     loadFoodsDropdown();
 }
 
-// Summary Page (index.html)
+// Summary Page
 if (document.getElementById('summary-table')) {
     const summaryBody = document.getElementById('summary-body');
     const totalKcals = document.getElementById('total-kcals');
     const totalProtein = document.getElementById('total-protein');
     const totalCarbs = document.getElementById('total-carbs');
     const totalFat = document.getElementById('total-fat');
-    const ctx = document.getElementById('macro-chart').getContext('2d');
+    let chartInstance = null; // Store chart instance to destroy it
 
     const cleanupOldEntries = () => {
         const today = new Date().toISOString().split('T')[0];
@@ -325,8 +322,13 @@ if (document.getElementById('summary-table')) {
         totalCarbs.textContent = totals.carbs.toFixed(1);
         totalFat.textContent = totals.fat.toFixed(1);
 
+        // Destroy existing chart to prevent overlap
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
         try {
-            new Chart(ctx, {
+            chartInstance = new Chart(document.getElementById('macro-chart').getContext('2d'), {
                 type: 'pie',
                 data: {
                     labels: ['Protein', 'Carbs', 'Fat'],
@@ -388,7 +390,6 @@ if (document.getElementById('summary-table')) {
                         return s;
                     });
                     saveDailySummary(summary);
-                    // loadSummary() called via event listener
                 });
             }
         });
@@ -402,10 +403,10 @@ if (document.getElementById('summary-table')) {
     };
 
     window.showEditForm = (id) => {
-        const editForm = document.getElementById(`edit-form-${id}`);
+        const editForm = document.getElementById(`edit-form-${item.id}`);
         if (editForm) {
             editForm.classList.add('active');
-            document.getElementById(`actions-menu-${id}`).classList.remove('active');
+            document.getElementById(`actions-menu-${item.id}`).classList.remove('active');
         }
     };
 
@@ -420,3 +421,12 @@ if (document.getElementById('summary-table')) {
         if (confirm('Are you sure you want to delete this entry?')) {
             let summary = getDailySummary();
             summary = summary.filter(s => s.id !== id);
+            saveDailySummary(summary);
+        }
+    };
+
+    // Listen for updates
+    window.addEventListener('summaryUpdated', loadSummary);
+    window.addEventListener('storage', loadSummary);
+    loadSummary();
+}
