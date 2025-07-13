@@ -12,12 +12,7 @@
 <body>
     <header>
         <h1>Nutrition Tracker</h1>
-        <button id="menu-btn" aria-label="Toggle menu">☰</button>
     </header>
-    <nav id="menu" class="hidden">
-        <a href="add-food.html">Add Food</a>
-        <a href="nutrition-facts.html">Manage Foods</a>
-    </nav>
     <main>
         <h2>Today’s Summary</h2>
         <section>
@@ -47,10 +42,10 @@
                 </tfoot>
             </table>
         </section>
-        <section>
-            <canvas id="macro-chart"></canvas>
-        </section>
-        <button onclick="window.location.href='add-food.html'">Add Food</button>
+        <div class="floating-toolbars">
+            <a href="add-food.html" class="toolbar-btn add-food" aria-label="Add Food">➕ Add Food</a>
+            <a href="nutrition-facts.html" class="toolbar-btn manage-foods" aria-label="Manage Foods">🍎 Manage Foods</a>
+        </div>
     </main>
     <script src="script.js"></script>
 </body>
