@@ -10,55 +10,48 @@
 </head>
 <body>
     <header>
-        <h1>Nutrition Tracker</h1>
-        <button id="menu-btn" aria-label="Toggle menu">☰</button>
+        <h1>Manage Foods</h1>
     </header>
-    <nav id="menu" class="hidden">
-        <a href="index.html">Daily Summary</a>
-        <a href="add-food.html">Add Food</a>
-    </nav>
     <main>
-        <h2>Manage Foods</h2>
-        <section>
-            <h3>Add or Edit Food</h3>
-            <form id="nutrition-form">
-                <input type="hidden" id="food-id">
-                <label for="name">Item Name:</label>
-                <input type="text" id="name" required maxlength="100" aria-label="Item name">
-                <label for="amount">Amount (e.g., 1, 100):</label>
-                <input type="number" id="amount" min="0.01" step="0.01" required aria-label="Serving amount">
-                <label for="unit-type">Unit Type (e.g., cup, g):</label>
-                <input type="text" id="unit-type" required maxlength="20" aria-label="Unit type">
-                <label for="kcals">Kcals:</label>
-                <input type="number" id="kcals" min="0" step="0.1" required aria-label="Calories">
-                <label for="protein">Protein (g):</label>
-                <input type="number" id="protein" min="0" step="0.1" required aria-label="Protein in grams">
-                <label for="carbs">Carbs (g):</label>
-                <input type="number" id="carbs" min="0" step="0.1" required aria-label="Carbs in grams">
-                <label for="fat">Fat (g):</label>
-                <input type="number" id="fat" min="0" step="0.1" required aria-label="Fat in grams">
-                <button type="submit">Save Food</button>
-            </form>
-        </section>
-        <section>
-            <h3>Saved Foods</h3>
-            <table id="foods-table">
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Amount</th>
-                        <th>Unit Type</th>
-                        <th>Kcals</th>
-                        <th>Protein (g)</th>
-                        <th>Carbs (g)</th>
-                        <th>Fat (g)</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="foods-body"></tbody>
-            </table>
-        </section>
-        <a href="index.html">Back to Summary</a>
+        <h2>Add or Edit Food</h2>
+        <form id="nutrition-form">
+            <input type="hidden" id="food-id">
+            <label for="name">Item Name:</label>
+            <input type="text" id="name" required maxlength="100" aria-label="Food name">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" step="0.01" required aria-label="Serving amount">
+            <label for="unit-type">Unit Type:</label>
+            <input type="text" id="unit-type" maxlength="20" required aria-label="Unit type">
+            <label for="kcals">Kcals:</label>
+            <input type="number" id="kcals" step="0.1" required aria-label="Calories">
+            <label for="protein">Protein (g):</label>
+            <input type="number" id="protein" step="0.1" required aria-label="Protein in grams">
+            <label for="carbs">Carbs (g):</label>
+            <input type="number" id="carbs" step="0.1" required aria-label="Carbs in grams">
+            <label for="fat">Fat (g):</label>
+            <input type="number" id="fat" step="0.1" required aria-label="Fat in grams">
+            <button type="submit">Save Food</button>
+        </form>
+        <h2>Saved Foods</h2>
+        <table id="foods-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Unit</th>
+                    <th>Kcals</th>
+                    <th>Protein</th>
+                    <th>Carbs</th>
+                    <th>Fat</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="foods-body"></tbody>
+        </table>
+        <div class="floating-toolbars">
+            <a href="index.html" class="toolbar-btn summary" aria-label="Back to Summary">📋 Summary</a>
+            <a href="add-food.html" class="toolbar-btn add-food" aria-label="Add Food">➕ Add Food</a>
+        </div>
     </main>
     <script src="script.js"></script>
 </body>
