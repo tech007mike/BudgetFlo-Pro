@@ -12,40 +12,44 @@
 <body>
     <header>
         <h1>Nutrition Tracker</h1>
-        <button id="menu-btn">☰ Menu</button>
+        <button id="menu-btn" aria-label="Toggle menu">☰</button>
     </header>
     <nav id="menu" class="hidden">
         <a href="add-food.html">Add Food</a>
-        <a href="nutrition-facts.html">Enter Nutrition Facts</a>
+        <a href="nutrition-facts.html">Manage Foods</a>
     </nav>
     <main>
         <h2>Today’s Summary</h2>
-        <table id="summary-table">
-            <thead>
-                <tr>
-                    <th>Food</th>
-                    <th>Serving Size</th>
-                    <th>Kcals</th>
-                    <th>Protein (g)</th>
-                    <th>Carbs (g)</th>
-                    <th>Fat (g)</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="summary-body"></tbody>
-            <tfoot>
-                <tr>
-                    <td>Total</td>
-                    <td></td>
-                    <td id="total-kcals">0</td>
-                    <td id="total-protein">0</td>
-                    <td id="total-carbs">0</td>
-                    <td id="total-fat">0</td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
-        <canvas id="macro-chart"></canvas>
+        <section>
+            <table id="summary-table">
+                <thead>
+                    <tr>
+                        <th>Food</th>
+                        <th>Serving Size</th>
+                        <th>Kcals</th>
+                        <th>Protein (g)</th>
+                        <th>Carbs (g)</th>
+                        <th>Fat (g)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-body"></tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total</td>
+                        <td></td>
+                        <td id="total-kcals">0</td>
+                        <td id="total-protein">0</td>
+                        <td id="total-carbs">0</td>
+                        <td id="total-fat">0</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+        <section>
+            <canvas id="macro-chart"></canvas>
+        </section>
         <button onclick="window.location.href='add-food.html'">Add Food</button>
     </main>
     <script src="script.js"></script>
