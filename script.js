@@ -13,6 +13,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const userId = "user1"; // Fixed userId for single user, multi-device access
 
+
 // Nutrition Facts Page
 if (document.getElementById('nutrition-form')) {
     const form = document.getElementById('nutrition-form');
@@ -67,9 +68,7 @@ if (document.getElementById('nutrition-form')) {
     // Delete food
     window.deleteFood = async (id) => {
         if (confirm('Are you sure you want to delete this food? This will remove it from all summaries.')) {
-            // Delete from foods
             await db.collection('users').doc(userId).collection('foods').doc(id).delete();
-            // Delete related daily summary entries
             const snapshot = await db.collection('users').doc(userId).collection('dailySummary').where('foodId', '==', id).get();
             snapshot.forEach(doc => doc.ref.delete());
             loadFoods();
@@ -101,9 +100,7 @@ if (document.getElementById('nutrition-form')) {
         };
 
         if (foodIdInput.value) {
-            // Update existing food
             await db.collection('users').doc(userId).collection('foods').doc(foodIdInput.value).set(food);
-            // Update daily summary
             const snapshot = await db.collection('users').doc(userId).collection('dailySummary').where('foodId', '==', foodIdInput.value).get();
             snapshot.forEach(async (doc) => {
                 const item = doc.data();
@@ -118,7 +115,6 @@ if (document.getElementById('nutrition-form')) {
                 });
             });
         } else {
-            // Add new food
             await db.collection('users').doc(userId).collection('foods').add(food);
         }
 
@@ -127,7 +123,6 @@ if (document.getElementById('nutrition-form')) {
         loadFoods();
     });
 
-    // Initialize
     loadFoods();
 }
 
@@ -138,12 +133,10 @@ if (document.getElementById('add-food-form')) {
     const quantityInput = document.getElementById('quantity');
     const quantityValue = document.getElementById('quantity-value');
 
-    // Update quantity display
     quantityInput.addEventListener('input', () => {
         quantityValue.textContent = quantityInput.value;
     });
 
-    // Load foods into dropdown
     const loadFoodsDropdown = async () => {
         const snapshot = await db.collection('users').doc(userId).collection('foods').get();
         foodSelect.innerHTML = '<option value="">Select a food</option>';
@@ -153,7 +146,6 @@ if (document.getElementById('add-food-form')) {
         });
     };
 
-    // Save food to daily summary
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const foodId = foodSelect.value;
@@ -180,7 +172,6 @@ if (document.getElementById('add-food-form')) {
         }
     });
 
-    // Initialize
     loadFoodsDropdown();
 }
 
@@ -193,21 +184,19 @@ if (document.getElementById('summary-table')) {
     const totalFat = document.getElementById('total-fat');
     const ctx = document.getElementById('macro-chart').getContext('2d');
 
-    // Menu toggle
     document.getElementById('menu-btn').addEventListener('click', () => {
         document.getElementById('menu').classList.toggle('hidden');
+        document.getElementById('menu').classList.toggle('active');
     });
 
-    // Clean up old daily summary entries
     const cleanupOldEntries = async () => {
         const today = new Date().toISOString().split('T')[0];
         const snapshot = await db.collection('users').doc(userId).collection('dailySummary').where('date', '!=', today).get();
         snapshot.forEach(doc => doc.ref.delete());
     };
 
-    // Load daily summary for today
     const loadSummary = async () => {
-        await cleanupOldEntries(); // Delete old entries
+        await cleanupOldEntries();
         const today = new Date().toISOString().split('T')[0];
         const foodsSnapshot = await db.collection('users').doc(userId).collection('foods').get();
         const foods = {};
@@ -236,12 +225,13 @@ if (document.getElementById('summary-table')) {
                 <tr id="edit-form-${doc.id}" class="edit-form">
                     <td colspan="7">
                         <form id="edit-summary-form-${doc.id}">
-                            <select id="edit-food-${doc.id}" required>
+                            <label for="edit-food-${doc.id}">Food:</label>
+                            <select id="edit-food-${doc.id}" required aria-label="Select a food">
                                 <option value="">Select a food</option>
                                 ${Object.keys(foods).map(id => `<option value="${id}" ${id === item.foodId ? 'selected' : ''}>${foods[id].name} (${foods[id].amount} ${foods[id].unitType})</option>`).join('')}
                             </select>
-                            <label>Quantity: <span id="edit-quantity-value-${doc.id}">${item.quantity}</span></label>
-                            <input type="range" id="edit-quantity-${doc.id}" min="0.25" max="20" step="0.25" value="${item.quantity}" required>
+                            <label for="edit-quantity-${doc.id}">Quantity: <span id="edit-quantity-value-${doc.id}">${item.quantity}</span></label>
+                            <input type="range" id="edit-quantity-${doc.id}" min="0.25" max="20" step="0.25" value="${item.quantity}" required aria-label="Quantity slider">
                             <button type="submit">Save</button>
                             <button type="button" onclick="hideEditForm('${doc.id}')">Cancel</button>
                         </form>
@@ -259,7 +249,6 @@ if (document.getElementById('summary-table')) {
         totalCarbs.textContent = totals.carbs.toFixed(1);
         totalFat.textContent = totals.fat.toFixed(1);
 
-        // Update pie chart
         new Chart(ctx, {
             type: 'pie',
             data: {
@@ -273,14 +262,14 @@ if (document.getElementById('summary-table')) {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'top', labels: { color: '#333' } },
-                    title: { display: true, text: 'Macronutrient Breakdown', color: '#333' }
+                    legend: { position: 'top', labels: { font: { size: 12 }, color: '#333' } },
+                    title: { display: true, text: 'Macronutrient Breakdown', font: { size: 16 }, color: '#333' }
                 }
             }
         });
 
-        // Attach edit form listeners
         snapshot.forEach(doc => {
             const form = document.getElementById(`edit-summary-form-${doc.id}`);
             const quantityInput = document.getElementById(`edit-quantity-${doc.id}`);
@@ -312,17 +301,14 @@ if (document.getElementById('summary-table')) {
         });
     };
 
-    // Show edit form
     window.showEditForm = (docId) => {
         document.getElementById(`edit-form-${docId}`).classList.add('active');
     };
 
-    // Hide edit form
     window.hideEditForm = (docId) => {
         document.getElementById(`edit-form-${docId}`).classList.remove('active');
     };
 
-    // Delete entry
     window.deleteEntry = async (docId) => {
         if (confirm('Are you sure you want to delete this entry?')) {
             await db.collection('users').doc(userId).collection('dailySummary').doc(docId).delete();
@@ -330,6 +316,5 @@ if (document.getElementById('summary-table')) {
         }
     };
 
-    // Initialize
     loadSummary();
 }
