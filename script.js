@@ -47,12 +47,13 @@ const saveDailySummary = (summary) => {
             });
         });
 
-        // Check storage quota and trim if necessary
+        // Check storage quota and handle overflow
         const currentData = localStorage.getItem('nutritionTrackerDailySummary');
-        if (currentData && new Blob([currentData]).size > 1024 * 1024 * 5) { // 5MB limit
-            console.warn('Storage nearing limit, trimming old data');
-            const today = new Date().toISOString().split('T')[0];
-            const trimmedSummary = summary.filter(s => s.date === today);
+        if (currentData && new Blob([currentData]).size > 1024 * 1024 * 4) { // 4MB limit to allow buffer
+            console.warn('Storage nearing limit, trimming to last 30 days');
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            const trimmedSummary = summary.filter(s => new Date(s.date) >= thirtyDaysAgo);
             if (trimmedSummary.length === 0) {
                 localStorage.removeItem('nutritionTrackerDailySummary'); // Reset if empty
                 return true;
@@ -67,7 +68,13 @@ const saveDailySummary = (summary) => {
         return true; // Indicate success
     } catch (error) {
         console.error('Error saving daily summary:', error, 'Data:', summary);
-        alert('Failed to save the daily summary. Check storage or clear data.');
+        // Retry with minimal data if quota exceeded
+        if (error.name === 'QuotaExceededError') {
+            console.warn('Quota exceeded, resetting storage');
+            localStorage.removeItem('nutritionTrackerDailySummary');
+            return true; // Allow app to continue with reset
+        }
+        alert('Failed to save the daily summary. Storage may be full or corrupted. Clear data to reset.');
         return false; // Indicate failure
     }
 };
@@ -364,11 +371,10 @@ if (document.getElementById('summary-table')) {
             totalCarbs.textContent = totals.carbs.toFixed(1);
             totalFat.textContent = totals.fat.toFixed(1);
 
-            // Destroy existing chart to prevent overlap
+            // Always render chart, empty if no data
             if (chartInstance) {
                 chartInstance.destroy();
             }
-
             const ctx = document.getElementById('macro-chart').getContext('2d');
             chartInstance = new Chart(ctx, {
                 type: 'pie',
