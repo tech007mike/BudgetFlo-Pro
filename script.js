@@ -35,17 +35,44 @@ const getDailySummary = () => {
 
 const saveDailySummary = (summary) => {
     try {
+        // Validate summary data
+        if (!Array.isArray(summary)) throw new Error('Summary must be an array');
+        summary.forEach(item => {
+            if (typeof item !== 'object' || item === null) throw new Error('Invalid summary item');
+            ['id', 'date', 'foodId', 'foodName', 'amount', 'unitType', 'quantity', 'kcals', 'protein', 'carbs', 'fat'].forEach(key => {
+                if (item[key] === undefined) {
+                    console.warn(`Missing ${key} in summary item, resetting to default`);
+                    item[key] = key === 'quantity' ? 1 : 0; // Fallback for missing values
+                }
+            });
+        });
+
+        // Check storage quota and trim if necessary
+        const currentData = localStorage.getItem('nutritionTrackerDailySummary');
+        if (currentData && new Blob([currentData]).size > 1024 * 1024 * 5) { // 5MB limit
+            console.warn('Storage nearing limit, trimming old data');
+            const today = new Date().toISOString().split('T')[0];
+            const trimmedSummary = summary.filter(s => s.date === today);
+            if (trimmedSummary.length === 0) {
+                localStorage.removeItem('nutritionTrackerDailySummary'); // Reset if empty
+                return true;
+            }
+            summary = trimmedSummary;
+        }
+
         localStorage.setItem('nutritionTrackerDailySummary', JSON.stringify(summary));
         console.log('Saved daily summary:', summary);
         window.dispatchEvent(new CustomEvent('summaryUpdated'));
         window.dispatchEvent(new Event('storage')); // For cross-tab updates
+        return true; // Indicate success
     } catch (error) {
-        console.error('Error saving daily summary to localStorage:', error);
-        alert('Failed to save daily summary. Please try again.');
+        console.error('Error saving daily summary:', error, 'Data:', summary);
+        alert('Failed to save the daily summary. Check storage or clear data.');
+        return false; // Indicate failure
     }
 };
 
-// Nutrition Facts Page
+// Nutrition Facts Page (unchanged)
 if (document.getElementById('nutrition-form')) {
     const form = document.getElementById('nutrition-form');
     const foodsBody = document.getElementById('foods-body');
@@ -109,7 +136,9 @@ if (document.getElementById('nutrition-form')) {
             saveFoods(foods);
             let summary = getDailySummary();
             summary = summary.filter(s => s.foodId !== id);
-            saveDailySummary(summary);
+            if (!saveDailySummary(summary)) {
+                alert('Failed to update summary after deleting food.');
+            }
             loadFoods();
         }
     };
@@ -167,7 +196,9 @@ if (document.getElementById('nutrition-form')) {
                 }
                 return s;
             });
-            saveDailySummary(summary);
+            if (!saveDailySummary(summary)) {
+                alert('Failed to update summary after editing food.');
+            }
         } else {
             foods.push(food);
         }
@@ -183,7 +214,7 @@ if (document.getElementById('nutrition-form')) {
     loadFoods();
 }
 
-// Add Food Page
+// Add Food Page (unchanged)
 if (document.getElementById('add-food-form')) {
     const form = document.getElementById('add-food-form');
     const foodSelect = document.getElementById('food-select');
@@ -239,10 +270,13 @@ if (document.getElementById('add-food-form')) {
             carbs: food.carbs * quantity,
             fat: food.fat * quantity
         });
-        saveDailySummary(summary);
-        form.reset();
-        quantityValue.textContent = '1';
-        window.location.href = 'index.html';
+        if (!saveDailySummary(summary)) {
+            alert('Failed to save the daily summary after adding food.');
+        } else {
+            form.reset();
+            quantityValue.textContent = '1';
+            window.location.href = 'index.html';
+        }
     });
 
     // Listen for updates
@@ -267,7 +301,9 @@ if (document.getElementById('summary-table')) {
         const today = new Date().toISOString().split('T')[0];
         let summary = getDailySummary();
         summary = summary.filter(s => s.date === today);
-        saveDailySummary(summary);
+        if (!saveDailySummary(summary)) {
+            alert('Failed to clean up old entries. Summary may be incomplete.');
+        }
     };
 
     const loadSummary = () => {
@@ -401,8 +437,11 @@ if (document.getElementById('summary-table')) {
                         }
                         return s;
                     });
-                    saveDailySummary(summary);
-                    loadSummary(); // Re-render after edit
+                    if (!saveDailySummary(summary)) {
+                        alert('Failed to save the daily summary after editing.');
+                    } else {
+                        loadSummary(); // Re-render after edit
+                    }
                 });
             }
         });
@@ -435,8 +474,11 @@ if (document.getElementById('summary-table')) {
         if (confirm('Are you sure you want to delete this entry?')) {
             let summary = getDailySummary();
             summary = summary.filter(s => s.id !== id);
-            saveDailySummary(summary);
-            loadSummary(); // Re-render after delete
+            if (!saveDailySummary(summary)) {
+                alert('Failed to save the daily summary after deleting.');
+            } else {
+                loadSummary(); // Re-render after delete
+            }
         }
     };
 
@@ -446,8 +488,11 @@ if (document.getElementById('summary-table')) {
                 const today = new Date().toISOString().split('T')[0];
                 let summary = getDailySummary();
                 summary = summary.filter(s => s.date !== today);
-                saveDailySummary(summary);
-                loadSummary(); // Re-render after clear
+                if (!saveDailySummary(summary)) {
+                    alert('Failed to clear the daily summary.');
+                } else {
+                    loadSummary(); // Re-render after clear
+                }
             }
         });
     }
