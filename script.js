@@ -12,24 +12,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const userId = "user1"; // Fixed userId for single user, multi-device access
 
-
-// Global menu toggle
-document.addEventListener('DOMContentLoaded', () => {
-    const menuBtn = document.getElementById('menu-btn');
-    const menu = document.getElementById('menu');
-    if (menuBtn && menu) {
-        console.log('Menu button and menu found, attaching event listener');
-        menuBtn.addEventListener('click', () => {
-            console.log('Menu button clicked, toggling menu');
-            menu.classList.toggle('hidden');
-            menu.classList.toggle('active');
-        });
-    } else {
-        console.error('Menu button or menu not found:', { menuBtn, menu });
-        alert('Menu initialization failed. Check console for details.');
-    }
-});
-
 // Nutrition Facts Page
 if (document.getElementById('nutrition-form')) {
     const form = document.getElementById('nutrition-form');
@@ -226,7 +208,7 @@ if (document.getElementById('add-food-form')) {
     loadFoodsDropdown();
 }
 
-// Landing Page (Daily Summary)
+// Summary Page (index.html)
 if (document.getElementById('summary-table')) {
     const summaryBody = document.getElementById('summary-body');
     const totalKcals = document.getElementById('total-kcals');
@@ -334,13 +316,6 @@ if (document.getElementById('summary-table')) {
             }
 
             snapshot.forEach(doc => {
-                const actionsBtn = document.querySelector(`#actions-menu-${doc.id}`)?.parentElement.querySelector('.actions-btn');
-                if (actionsBtn) {
-                    actionsBtn.addEventListener('click', () => toggleActionsMenu(doc.id));
-                } else {
-                    console.error('Actions button not found for ID:', doc.id);
-                }
-
                 const form = document.getElementById(`edit-summary-form-${doc.id}`);
                 const quantityInput = document.getElementById(`edit-quantity-${doc.id}`);
                 const quantityValue = document.getElementById(`edit-quantity-value-${doc.id}`);
