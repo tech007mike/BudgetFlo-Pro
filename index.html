@@ -5,61 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nutrition Tracker</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
-        <h1>Nutrition Tracker</h1>
-    </header>
-    <main>
-        <h2>Today’s Summary</h2>
-        <section>
-            <div id="loading-message" style="display: none; font-size: 0.7rem; color: #2c3e50;">
-                Loading summary...
-            </div>
-            <div id="fallback-message" style="display: none; font-size: 0.7rem; color: #e74c3c;">
-                Unable to load summary. Check connection or clear storage.
-            </div>
-            <table id="summary-table">
-                <thead>
-                    <tr>
-                        <th>Food</th>
-                        <th>Serving</th>
-                        <th>Kcal</th>
-                        <th>Prot</th>
-                        <th>Carb</th>
-                        <th>Fat</th>
-                        <th>Act</th>
-                    </tr>
-                </thead>
-                <tbody id="summary-body"></tbody>
-                <tfoot>
-                    <tr>
-                        <td>Total</td>
-                        <td></td>
-                        <td id="total-kcals">0</td>
-                        <td id="total-protein">0</td>
-                        <td id="total-carbs">0</td>
-                        <td id="total-fat">0</td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
-            <div id="error-message" style="display: none; font-size: 0.7rem; color: #e74c3c;">
-                Error: Failed to load or save summary. Clear storage or try again.
-            </div>
-        </section>
-        <section>
-            <canvas id="macro-chart" aria-label="Macronutrient distribution chart"></canvas>
-        </section>
-        <section>
-            <button id="clear-entries" style="background-color: #e74c3c; color: white; padding: 0.3rem; border: none; border-radius: 2px; font-size: 0.7rem; cursor: pointer; min-height: 44px;" aria-label="Clear all entries for today">Clear All Entries</button>
-        </section>
-        <div class="floating-toolbars">
-            <a href="add-food.html" class="toolbar-btn add-food" aria-label="Add Food">➕ Add Food</a>
-            <a href="nutrition-facts.html" class="toolbar-btn manage-foods" aria-label="Manage Foods">🍎 Manage Foods</a>
-        </div>
-    </main>
+    <h1>Nutrition Tracker - Daily Summary</h1>
+    <table id="summaryTable">
+        <thead>
+            <tr>
+                <th>Qty</th>
+                <th>Food Name</th>
+                <th>Serving Size</th>
+                <th>Serving Type</th>
+                <th>Fat (g)</th>
+                <th>Protein (g)</th>
+                <th>Carbs (g)</th>
+                <th>Kcals</th>
+            </tr>
+        </thead>
+        <tbody id="summaryBody"></tbody>
+    </table>
+    <div class="button-container">
+        <button onclick="window.location.href='nutrition-facts.html'">Manage Food Database</button>
+        <button onclick="window.location.href='add-food.html'">Consume Food</button>
+    </div>
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', displaySummary);
+    </script>
 </body>
 </html>
