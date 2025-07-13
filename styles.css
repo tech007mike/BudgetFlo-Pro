@@ -96,7 +96,7 @@ table {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow-x: auto; /* Scrollable on mobile */
+    overflow-x: auto;
     display: block;
 }
 
@@ -204,7 +204,7 @@ button[type="submit"]:hover, button:not(.delete):not(#menu-btn):hover {
 canvas {
     max-width: 100%;
     margin: 1rem 0;
-    height: auto !important; /* Ensure Chart.js resizes */
+    height: auto !important;
 }
 
 /* Mobile-specific adjustments */
