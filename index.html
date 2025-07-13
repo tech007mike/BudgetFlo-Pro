@@ -2,31 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nutrition Tracker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Nutrition Tracker - Daily Summary</h1>
-    <table id="summaryTable">
-        <thead>
-            <tr>
-                <th>Qty</th>
-                <th>Food Name</th>
-                <th>Serving Size</th>
-                <th>Serving Type</th>
-                <th>Fat (g)</th>
-                <th>Protein (g)</th>
-                <th>Carbs (g)</th>
-                <th>Kcals</th>
-            </tr>
-        </thead>
-        <tbody id="summaryBody"></tbody>
-    </table>
-    <div class="button-container">
-        <button onclick="window.location.href='nutrition-facts.html'">Manage Food Database</button>
-        <button onclick="window.location.href='add-food.html'">Consume Food</button>
-    </div>
+    <header>
+        <h1>Nutrition Tracker</h1>
+        <p class="subtitle">Daily Summary</p>
+    </header>
+    <main>
+        <table id="summaryTable">
+            <thead>
+                <tr>
+                    <th>Qty</th>
+                    <th>Food Name</th>
+                    <th>Serving Size</th>
+                    <th>Serving Type</th>
+                    <th>Fat (g)</th>
+                    <th>Protein (g)</th>
+                    <th>Carbs (g)</th>
+                    <th>Kcals</th>
+                </tr>
+            </thead>
+            <tbody id="summaryBody"></tbody>
+        </table>
+        <div class="button-container">
+            <button onclick="window.location.href='nutrition-facts.html'">Manage Database</button>
+            <button onclick="window.location.href='add-food.html'">Log Food</button>
+        </div>
+    </main>
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', displaySummary);
