@@ -1,4 +1,3 @@
-
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCjBjIA4-W4GoPhzZ24vvUkrvg9mwY4Dxw",
@@ -18,12 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuBtn = document.getElementById('menu-btn');
     const menu = document.getElementById('menu');
     if (menuBtn && menu) {
+        console.log('Menu button and menu found, attaching event listener');
         menuBtn.addEventListener('click', () => {
+            console.log('Menu button clicked, toggling menu');
             menu.classList.toggle('hidden');
             menu.classList.toggle('active');
         });
     } else {
-        console.error('Menu button or menu not found');
+        console.error('Menu button or menu not found:', { menuBtn, menu });
     }
 });
 
@@ -256,7 +257,7 @@ if (document.getElementById('summary-table')) {
             let totals = { kcals: 0, protein: 0, carbs: 0, fat: 0 };
             summaryBody.innerHTML = '';
             if (snapshot.empty) {
-                summaryBody.innerHTML = '<tr><td colspan="7">No entries for today.</td></tr>';
+                summaryBody.innerHTML = '<tr><td colspan="7">No entries for today. Add a food to get started!</td></tr>';
             } else {
                 snapshot.forEach(doc => {
                     const item = doc.data();
@@ -268,9 +269,12 @@ if (document.getElementById('summary-table')) {
                             <td>${item.protein.toFixed(1)}</td>
                             <td>${item.carbs.toFixed(1)}</td>
                             <td>${item.fat.toFixed(1)}</td>
-                            <td>
-                                <button onclick="showEditForm('${doc.id}')">Edit</button>
-                                <button class="delete" onclick="deleteEntry('${doc.id}')">Delete</button>
+                            <td class="actions-cell">
+                                <button class="actions-btn" onclick="toggleActionsMenu('${doc.id}')">⋯</button>
+                                <div id="actions-menu-${doc.id}" class="actions-menu">
+                                    <button class="edit" onclick="showEditForm('${doc.id}')">Edit</button>
+                                    <button class="delete" onclick="deleteEntry('${doc.id}')">Delete</button>
+                                </div>
                             </td>
                         </tr>
                         <tr id="edit-form-${doc.id}" class="edit-form">
@@ -317,8 +321,8 @@ if (document.getElementById('summary-table')) {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'top', labels: { font: { size: 12 }, color: '#333' } },
-                            title: { display: true, text: 'Macronutrient Breakdown', font: { size: 16 }, color: '#333' }
+                            legend: { position: 'top', labels: { font: { size: 10 }, color: '#333' } },
+                            title: { display: true, text: 'Macronutrient Breakdown', font: { size: 14 }, color: '#333' }
                         }
                     }
                 });
@@ -366,16 +370,35 @@ if (document.getElementById('summary-table')) {
                     console.error('Edit form elements not found for doc:', doc.id);
                 }
             });
+
+            // Attach actions menu toggle
+            snapshot.forEach(doc => {
+                const actionsBtn = document.querySelector(`#actions-menu-${doc.id}`).parentElement.querySelector('.actions-btn');
+                if (actionsBtn) {
+                    actionsBtn.addEventListener('click', () => toggleActionsMenu(doc.id));
+                }
+            });
         } catch (error) {
             console.error('Error loading summary:', error);
-            summaryBody.innerHTML = '<tr><td colspan="7">Error loading summary.</td></tr>';
+            summaryBody.innerHTML = '<tr><td colspan="7">Error loading summary. Check Firebase config.</td></tr>';
+        }
+    };
+
+    window.toggleActionsMenu = (docId) => {
+        const menu = document.getElementById(`actions-menu-${docId}`);
+        if (menu) {
+            console.log('Toggling actions menu for ID:', docId);
+            menu.classList.toggle('active');
+        } else {
+            console.error('Actions menu not found for ID:', docId);
         }
     };
 
     window.showEditForm = (docId) => {
-        const editForm = document.getElementById(`edit-form-${doc.id}`);
+        const editForm = document.getElementById(`edit-form-${docId}`);
         if (editForm) {
             editForm.classList.add('active');
+            document.getElementById(`actions-menu-${docId}`).classList.remove('active');
         } else {
             console.error('Edit form not found for ID:', docId);
         }
