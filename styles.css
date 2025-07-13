@@ -1,0 +1,17 @@
+/* Range input styling */
+input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}
+#quantity-value {
+    font-weight: bold;
+    color: #2ecc71;
+}
+
+/* Delete button styling */
+button.delete {
+    background-color: #e74c3c;
+}
+button.delete:hover {
+    background-color: #c0392b;
+}
