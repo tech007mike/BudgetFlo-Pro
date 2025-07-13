@@ -258,6 +258,9 @@ if (document.getElementById('summary-table')) {
     const totalProtein = document.getElementById('total-protein');
     const totalCarbs = document.getElementById('total-carbs');
     const totalFat = document.getElementById('total-fat');
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
+    const clearEntriesButton = document.getElementById('clear-entries');
     let chartInstance = null; // Store chart instance to destroy it
 
     const cleanupOldEntries = () => {
@@ -268,67 +271,70 @@ if (document.getElementById('summary-table')) {
     };
 
     const loadSummary = () => {
-        cleanupOldEntries();
-        const today = new Date().toISOString().split('T')[0];
-        const foods = getFoods();
-        const summary = getDailySummary().filter(s => s.date === today);
-        let totals = { kcals: 0, protein: 0, carbs: 0, fat: 0 };
-        summaryBody.innerHTML = '';
-        if (summary.length === 0) {
-            summaryBody.innerHTML = '<tr><td colspan="7">No entries for today. Add a food to get started!</td></tr>';
-        } else {
-            summary.forEach(item => {
-                summaryBody.innerHTML += `
-                    <tr>
-                        <td>${item.foodName}</td>
-                        <td>${item.amount} ${item.unitType}</td>
-                        <td>${item.kcals.toFixed(1)}</td>
-                        <td>${item.protein.toFixed(1)}</td>
-                        <td>${item.carbs.toFixed(1)}</td>
-                        <td>${item.fat.toFixed(1)}</td>
-                        <td class="actions-cell">
-                            <button class="actions-btn" onclick="toggleActionsMenu('${item.id}')">⋯</button>
-                            <div id="actions-menu-${item.id}" class="actions-menu">
-                                <button class="edit" onclick="showEditForm('${item.id}')">Edit</button>
-                                <button class="delete" onclick="deleteEntry('${item.id}')">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr id="edit-form-${item.id}" class="edit-form">
-                        <td colspan="7">
-                            <form id="edit-summary-form-${item.id}">
-                                <label for="edit-food-${item.id}">Food:</label>
-                                <select id="edit-food-${item.id}" required aria-label="Select a food">
-                                    <option value="">Select a food</option>
-                                    ${foods.map(f => `<option value="${f.id}" ${f.id === item.foodId ? 'selected' : ''}>${f.name} (${f.amount} ${f.unitType})</option>`).join('')}
-                                </select>
-                                <label for="edit-quantity-${item.id}">Quantity: <span id="edit-quantity-value-${item.id}">${item.quantity}</span></label>
-                                <input type="range" id="edit-quantity-${item.id}" min="0.25" max="20" step="0.25" value="${item.quantity}" required aria-label="Quantity slider">
-                                <button type="submit">Save</button>
-                                <button type="button" onclick="hideEditForm('${item.id}')">Cancel</button>
-                            </form>
-                        </td>
-                    </tr>
-                `;
-                totals.kcals += item.kcals;
-                totals.protein += item.protein;
-                totals.carbs += item.carbs;
-                totals.fat += item.fat;
-            });
-        }
-
-        totalKcals.textContent = totals.kcals.toFixed(1);
-        totalProtein.textContent = totals.protein.toFixed(1);
-        totalCarbs.textContent = totals.carbs.toFixed(1);
-        totalFat.textContent = totals.fat.toFixed(1);
-
-        // Destroy existing chart to prevent overlap
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
-
+        if (loadingMessage) loadingMessage.style.display = 'block';
+        if (errorMessage) errorMessage.style.display = 'none';
         try {
-            chartInstance = new Chart(document.getElementById('macro-chart').getContext('2d'), {
+            cleanupOldEntries();
+            const today = new Date().toISOString().split('T')[0];
+            const foods = getFoods();
+            const summary = getDailySummary().filter(s => s.date === today);
+            let totals = { kcals: 0, protein: 0, carbs: 0, fat: 0 };
+            summaryBody.innerHTML = '';
+            if (summary.length === 0) {
+                summaryBody.innerHTML = '<tr><td colspan="7">No entries for today. Add a food to get started!</td></tr>';
+            } else {
+                summary.forEach(item => {
+                    summaryBody.innerHTML += `
+                        <tr>
+                            <td>${item.foodName}</td>
+                            <td>${item.amount} ${item.unitType}</td>
+                            <td>${item.kcals.toFixed(1)}</td>
+                            <td>${item.protein.toFixed(1)}</td>
+                            <td>${item.carbs.toFixed(1)}</td>
+                            <td>${item.fat.toFixed(1)}</td>
+                            <td class="actions-cell">
+                                <button class="actions-btn" onclick="toggleActionsMenu('${item.id}')" aria-label="Actions for ${item.foodName}">⋯</button>
+                                <div id="actions-menu-${item.id}" class="actions-menu">
+                                    <button class="edit" onclick="showEditForm('${item.id}')">Edit</button>
+                                    <button class="delete" onclick="deleteEntry('${item.id}')">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="edit-form-${item.id}" class="edit-form">
+                            <td colspan="7">
+                                <form id="edit-summary-form-${item.id}">
+                                    <label for="edit-food-${item.id}">Food:</label>
+                                    <select id="edit-food-${item.id}" required aria-label="Select a food">
+                                        <option value="">Select a food</option>
+                                        ${foods.map(f => `<option value="${f.id}" ${f.id === item.foodId ? 'selected' : ''}>${f.name} (${f.amount} ${f.unitType})</option>`).join('')}
+                                    </select>
+                                    <label for="edit-quantity-${item.id}">Quantity: <span id="edit-quantity-value-${item.id}">${item.quantity}</span></label>
+                                    <input type="range" id="edit-quantity-${item.id}" min="0.25" max="20" step="0.25" value="${item.quantity}" required aria-label="Quantity slider">
+                                    <button type="submit">Save</button>
+                                    <button type="button" onclick="hideEditForm('${item.id}')">Cancel</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                    totals.kcals += item.kcals;
+                    totals.protein += item.protein;
+                    totals.carbs += item.carbs;
+                    totals.fat += item.fat;
+                });
+            }
+
+            totalKcals.textContent = totals.kcals.toFixed(1);
+            totalProtein.textContent = totals.protein.toFixed(1);
+            totalCarbs.textContent = totals.carbs.toFixed(1);
+            totalFat.textContent = totals.fat.toFixed(1);
+
+            // Destroy existing chart to prevent overlap
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const ctx = document.getElementById('macro-chart').getContext('2d');
+            chartInstance = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: ['Protein', 'Carbs', 'Fat'],
@@ -349,8 +355,14 @@ if (document.getElementById('summary-table')) {
                 }
             });
         } catch (error) {
-            console.error('Error rendering chart:', error);
-            document.getElementById('macro-chart').style.display = 'none';
+            console.error('Error loading summary:', error);
+            if (errorMessage) errorMessage.style.display = 'block';
+            if (chartInstance) {
+                chartInstance.destroy();
+                document.getElementById('macro-chart').style.display = 'none';
+            }
+        } finally {
+            if (loadingMessage) loadingMessage.style.display = 'none';
         }
 
         summary.forEach(item => {
@@ -390,6 +402,7 @@ if (document.getElementById('summary-table')) {
                         return s;
                     });
                     saveDailySummary(summary);
+                    loadSummary(); // Re-render after edit
                 });
             }
         });
@@ -403,10 +416,11 @@ if (document.getElementById('summary-table')) {
     };
 
     window.showEditForm = (id) => {
-        const editForm = document.getElementById(`edit-form-${item.id}`);
+        const editForm = document.getElementById(`edit-form-${id}`);
         if (editForm) {
             editForm.classList.add('active');
-            document.getElementById(`actions-menu-${item.id}`).classList.remove('active');
+            const menu = document.getElementById(`actions-menu-${id}`);
+            if (menu) menu.classList.remove('active');
         }
     };
 
@@ -422,8 +436,21 @@ if (document.getElementById('summary-table')) {
             let summary = getDailySummary();
             summary = summary.filter(s => s.id !== id);
             saveDailySummary(summary);
+            loadSummary(); // Re-render after delete
         }
     };
+
+    if (clearEntriesButton) {
+        clearEntriesButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all entries for today?')) {
+                const today = new Date().toISOString().split('T')[0];
+                let summary = getDailySummary();
+                summary = summary.filter(s => s.date !== today);
+                saveDailySummary(summary);
+                loadSummary(); // Re-render after clear
+            }
+        });
+    }
 
     // Listen for updates
     window.addEventListener('summaryUpdated', loadSummary);
