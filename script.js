@@ -73,9 +73,10 @@ function consumeFood() {
     alert('Food logged successfully!');
     document.getElementById('quantity').value = 1;
     select.value = '';
+    displaySummary(); // Refresh summary after logging
 }
 
-// Display consumed foods in the summary table with delete buttons and calculate macro percentages
+// Display consumed foods in the summary table and calculate macro percentages
 function displaySummary() {
     const tbody = document.getElementById('summaryBody');
     tbody.innerHTML = '';
@@ -111,8 +112,13 @@ function displaySummary() {
     consumedFoods.forEach((food, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${food.name} / ${food.quantity} / ${food.servingSize} ${food.servingType}</td>
-            <td>${food.fat.toFixed(1)} / ${food.protein.toFixed(1)} / ${food.carbs.toFixed(1)} / ${food.kcals.toFixed(0)}</td>
+            <td>${food.name}</td>
+            <td>${food.quantity}</td>
+            <td>${food.servingSize} ${food.servingType}</td>
+            <td>${food.fat.toFixed(1)}</td>
+            <td>${food.protein.toFixed(1)}</td>
+            <td>${food.carbs.toFixed(1)}</td>
+            <td>${food.kcals.toFixed(0)}</td>
             <td><button onclick="deleteFood(${index})">X</button></td>
         `;
         tbody.appendChild(row);
