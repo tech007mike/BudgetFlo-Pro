@@ -95,3 +95,11 @@ h1 {
 .button-container button:hover {
     background-color: #218838;
 }
+
+select {
+    width: 200px;
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
