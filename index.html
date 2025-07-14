@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nutrition Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#28a745">
 </head>
 <body>
     <header>
         <h1>Nutrition Tracker</h1>
-        <p class="subtitle">Daily Summary - Sunday, July 13, 2025, 09:17 PM EDT</p>
+        <p class="subtitle">Daily Summary - Sunday, July 13, 2025, 11:03 PM EDT</p>
     </header>
     <main>
         <div id="macroPercentages">
@@ -41,6 +43,11 @@
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', displaySummary);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/nutrition-tracker/sw.js')
+                .then(() => console.log('Service Worker registered'))
+                .catch((error) => console.error('Service Worker registration failed:', error));
+        }
     </script>
 </body>
 </html>
