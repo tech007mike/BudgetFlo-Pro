@@ -75,7 +75,9 @@ function consumeFood() {
     select.value = '';
 }
 
-// Display consumed foods in the summary table with two rows per item
+// [Previous functions (getFoods, getConsumedFoods, saveFoods, saveConsumedFoods, addFood, populateFoodDropdown, consumeFood) remain unchanged]
+
+// Display consumed foods in the summary table with two rows per item, stacked vertically
 function displaySummary() {
     const tbody = document.getElementById('summaryBody');
     tbody.innerHTML = '';
@@ -84,23 +86,18 @@ function displaySummary() {
         // Row 1: Food Name / Qty / Serving Size
         const row1 = document.createElement('tr');
         row1.innerHTML = `
-            <td data-label="Food Name">${food.name}</td>
-            <td data-label="Qty">${food.quantity}</td>
-            <td data-label="Serving Size">${food.servingSize} ${food.servingType}</td>
-            <td colspan="4"></td> <!-- Empty cells to span nutritional info columns -->
+            <td>${food.name} / ${food.quantity} / ${food.servingSize} ${food.servingType}</td>
         `;
 
         // Row 2: Fat / Protein / Carbs / Kcals
         const row2 = document.createElement('tr');
         row2.innerHTML = `
-            <td colspan="3"></td> <!-- Empty cells to span food details columns -->
-            <td data-label="Fat (g)">${food.fat.toFixed(1)}</td>
-            <td data-label="Protein (g)">${food.protein.toFixed(1)}</td>
-            <td data-label="Carbs (g)">${food.carbs.toFixed(1)}</td>
-            <td data-label="Kcals">${food.kcals.toFixed(0)}</td>
+            <td>${food.fat.toFixed(1)} / ${food.protein.toFixed(1)} / ${food.carbs.toFixed(1)} / ${food.kcals.toFixed(0)}</td>
         `;
 
         tbody.appendChild(row1);
         tbody.appendChild(row2);
     });
 }
+
+// [Remaining functions remain unchanged]
