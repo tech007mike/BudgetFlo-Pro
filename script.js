@@ -70,28 +70,37 @@ function consumeFood() {
     const consumedFoods = getConsumedFoods();
     consumedFoods.push(consumed);
     saveConsumedFoods(consumedFoods);
-    alert('Food consumed and added to summary!');
+    alert('Food logged successfully!');
     document.getElementById('quantity').value = 1;
     select.value = '';
 }
 
-// Display consumed foods in the summary table
+// Display consumed foods in the summary table with two rows per item
 function displaySummary() {
     const tbody = document.getElementById('summaryBody');
     tbody.innerHTML = '';
     const consumedFoods = getConsumedFoods();
     consumedFoods.forEach(food => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${food.quantity}</td>
-            <td>${food.name}</td>
-            <td>${food.servingSize}</td>
-            <td>${food.servingType}</td>
-            <td>${food.fat.toFixed(1)}</td>
-            <td>${food.protein.toFixed(1)}</td>
-            <td>${food.carbs.toFixed(1)}</td>
-            <td>${food.kcals.toFixed(0)}</td>
+        // Row 1: Food Name / Qty / Serving Size
+        const row1 = document.createElement('tr');
+        row1.innerHTML = `
+            <td data-label="Food Name">${food.name}</td>
+            <td data-label="Qty">${food.quantity}</td>
+            <td data-label="Serving Size">${food.servingSize} ${food.servingType}</td>
+            <td colspan="4"></td> <!-- Empty cells to span nutritional info columns -->
         `;
-        tbody.appendChild(row);
+
+        // Row 2: Fat / Protein / Carbs / Kcals
+        const row2 = document.createElement('tr');
+        row2.innerHTML = `
+            <td colspan="3"></td> <!-- Empty cells to span food details columns -->
+            <td data-label="Fat (g)">${food.fat.toFixed(1)}</td>
+            <td data-label="Protein (g)">${food.protein.toFixed(1)}</td>
+            <td data-label="Carbs (g)">${food.carbs.toFixed(1)}</td>
+            <td data-label="Kcals">${food.kcals.toFixed(0)}</td>
+        `;
+
+        tbody.appendChild(row1);
+        tbody.appendChild(row2);
     });
 }
