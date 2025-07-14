@@ -19,11 +19,12 @@
         <button type="submit">Add Food</button>
     </form>
     <button onclick="window.location.href='index.html'">Back to Summary</button>
-    <label for="foodSelect">Select Food to Edit:</label>
-    <select id="foodSelect" name="foodSelect" style="max-height: 200px; overflow-y: auto;">
-        <option value="">Select Food to Edit</option>
-    </select>
-    <button id="deleteFoodBtn" style="display: none; margin-top: 10px;" onclick="deleteFoodFromDatabase()">Delete Food</button>
+    <div>
+        <select id="foodSelect" name="foodSelect" style="max-height: 200px; overflow-y: auto;">
+            <option value="">Select Food to Edit</option>
+        </select>
+        <button id="deleteFoodBtn" style="display: none; margin-top: 10px;" onclick="deleteFoodFromDatabase()">Delete Food</button>
+    </div>
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', initDatabasePage);
