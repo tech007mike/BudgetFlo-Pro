@@ -75,29 +75,54 @@ function consumeFood() {
     select.value = '';
 }
 
-// [Previous functions (getFoods, getConsumedFoods, saveFoods, saveConsumedFoods, addFood, populateFoodDropdown, consumeFood) remain unchanged]
-
-// Display consumed foods in the summary table with two rows per item, stacked vertically
+// Display consumed foods in the summary table with delete buttons and calculate macro percentages
 function displaySummary() {
     const tbody = document.getElementById('summaryBody');
     tbody.innerHTML = '';
     const consumedFoods = getConsumedFoods();
+    
+    // Calculate total kcals from fat, protein, and carbs
+    let totalFatKcals = 0;
+    let totalProteinKcals = 0;
+    let totalCarbsKcals = 0;
+    let totalKcals = 0;
+    
     consumedFoods.forEach(food => {
-        // Row 1: Food Name / Qty / Serving Size
-        const row1 = document.createElement('tr');
-        row1.innerHTML = `
+        const fatKcals = food.fat * 9;    // 9 kcals per gram of fat
+        const proteinKcals = food.protein * 4; // 4 kcals per gram of protein
+        const carbsKcals = food.carbs * 4;     // 4 kcals per gram of carbs
+        totalFatKcals += fatKcals;
+        totalProteinKcals += proteinKcals;
+        totalCarbsKcals += carbsKcals;
+        totalKcals += food.kcals;
+    });
+    
+    // Calculate percentages (avoid division by zero)
+    const fatPercentage = totalKcals > 0 ? ((totalFatKcals / totalKcals) * 100).toFixed(1) : 0;
+    const proteinPercentage = totalKcals > 0 ? ((totalProteinKcals / totalKcals) * 100).toFixed(1) : 0;
+    const carbsPercentage = totalKcals > 0 ? ((totalCarbsKcals / totalKcals) * 100).toFixed(1) : 0;
+    
+    // Update macro percentages in the HTML
+    document.getElementById('fatPercentage').textContent = `${fatPercentage}%`;
+    document.getElementById('proteinPercentage').textContent = `${proteinPercentage}%`;
+    document.getElementById('carbsPercentage').textContent = `${carbsPercentage}%`;
+    
+    // Display each food item with a delete button
+    consumedFoods.forEach((food, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
             <td>${food.name} / ${food.quantity} / ${food.servingSize} ${food.servingType}</td>
-        `;
-
-        // Row 2: Fat / Protein / Carbs / Kcals
-        const row2 = document.createElement('tr');
-        row2.innerHTML = `
             <td>${food.fat.toFixed(1)} / ${food.protein.toFixed(1)} / ${food.carbs.toFixed(1)} / ${food.kcals.toFixed(0)}</td>
+            <td><button onclick="deleteFood(${index})">X</button></td>
         `;
-
-        tbody.appendChild(row1);
-        tbody.appendChild(row2);
+        tbody.appendChild(row);
     });
 }
 
-// [Remaining functions remain unchanged]
+// Delete a food item from the summary and refresh the display
+function deleteFood(index) {
+    const consumedFoods = getConsumedFoods();
+    consumedFoods.splice(index, 1);  // Remove the food item at the specified index
+    saveConsumedFoods(consumedFoods); // Update the stored data
+    displaySummary();                 // Refresh the summary table and percentages
+}
