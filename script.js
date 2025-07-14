@@ -1,8 +1,8 @@
-// Assuming previous functions like getFoods(), saveFoods(), etc., exist from prior code
-// Example of existing functions (adjust as per your original code):
+// Functions to get and save foods to localStorage
 function getFoods() {
     return JSON.parse(localStorage.getItem('foods')) || [];
 }
+
 function saveFoods(foods) {
     localStorage.setItem('foods', JSON.stringify(foods));
 }
@@ -10,10 +10,10 @@ function saveFoods(foods) {
 // Variable to track the selected food for editing
 let selectedFoodIndex = null;
 
-// Populate the dropdown with food items
+// Populate the dropdown with saved foods
 function populateFoodDropdown() {
     const select = document.getElementById('foodSelect');
-    select.innerHTML = '<option value="">Add New Food</option>';
+    select.innerHTML = '<option value="">Select Food to Edit</option>'; // Reset to default option
     const foods = getFoods();
     foods.forEach((food, index) => {
         const option = document.createElement('option');
@@ -23,17 +23,17 @@ function populateFoodDropdown() {
     });
 }
 
-// Handle food selection from dropdown
+// Handle food selection from the dropdown
 function handleFoodSelection() {
     const select = document.getElementById('foodSelect');
     const index = select.value;
     if (index === "") {
-        // Clear form and set to "Add" mode
+        // Reset form to "Add" mode
         document.getElementById('foodForm').reset();
         document.querySelector('#foodForm button').textContent = 'Add Food';
         selectedFoodIndex = null;
     } else {
-        // Fill form with selected food's data and set to "Update" mode
+        // Populate form with selected food's details and switch to "Update" mode
         const foods = getFoods();
         const food = foods[index];
         document.getElementById('foodName').value = food.name;
@@ -48,16 +48,7 @@ function handleFoodSelection() {
     }
 }
 
-// Save food (add or update based on selectedFoodIndex)
-function saveFood(event) {
-    event.preventDefault();
-    const food = {
-        name: document.getElementById('foodName').value,
-        servingSize: parseFloat(document.getElementById('servingSize').value),
-        servingType: document.getElementBy ක
-
-```javascript
-// Save food (add or update based on selectedFoodIndex)
+// Handle form submission to add or update a food item
 function saveFood(event) {
     event.preventDefault();
     const food = {
@@ -71,27 +62,25 @@ function saveFood(event) {
     };
     const foods = getFoods();
     if (selectedFoodIndex === null) {
-        // Add new food
+        // Add a new food item
         foods.push(food);
         alert('Food added successfully!');
     } else {
-        // Update existing food
+        // Update the selected food item
         foods[selectedFoodIndex] = food;
         alert('Food updated successfully!');
     }
     saveFoods(foods);
-    // Refresh dropdown and reset form to "Add" mode
+    // Refresh the dropdown and reset the form
     populateFoodDropdown();
     document.getElementById('foodForm').reset();
     document.querySelector('#foodForm button').textContent = 'Add Food';
     selectedFoodIndex = null;
 }
 
-// Initialize the database management page
+// Initialize the page
 function initDatabasePage() {
     populateFoodDropdown();
     document.getElementById('foodSelect').addEventListener('change', handleFoodSelection);
     document.getElementById('foodForm').addEventListener('submit', saveFood);
 }
-
-// [Other existing functions like displaySummary, deleteFood, etc., remain unchanged]
