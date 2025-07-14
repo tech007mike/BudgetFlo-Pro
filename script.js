@@ -38,19 +38,17 @@ function addFood(event) {
 
 // Populate the dropdown with foods
 function populateFoodDropdown() {
-    // Try to find dropdowns by name first
     let selects = document.getElementsByName('foodSelect');
     if (selects.length === 0) {
-        // Fallback to finding by ID if name isn't used
         const selectById = document.getElementById('foodSelect');
         selects = selectById ? [selectById] : [];
     }
-    console.log('Found selects:', selects); // Debug log
+    console.log('Found selects:', selects);
     for (let select of selects) {
         if (select) {
             select.innerHTML = '<option value="">Select a food</option>';
             const foods = getFoods();
-            console.log('Available foods:', foods); // Debug log
+            console.log('Available foods:', foods);
             foods.forEach((food, index) => {
                 const option = document.createElement('option');
                 option.value = index;
@@ -112,10 +110,12 @@ let selectedFoodIndex = null;
 function handleFoodSelection() {
     const select = document.getElementById('foodSelect');
     const index = select.value;
+    const deleteBtn = document.getElementById('deleteFoodBtn');
     if (index === "") {
         document.getElementById('foodForm').reset();
         document.querySelector('#foodForm button').textContent = 'Add Food';
         selectedFoodIndex = null;
+        deleteBtn.style.display = 'none'; // Hide delete button
     } else {
         const foods = getFoods();
         const food = foods[index];
@@ -128,6 +128,7 @@ function handleFoodSelection() {
         document.getElementById('kcals').value = food.kcals;
         document.querySelector('#foodForm button').textContent = 'Update Food';
         selectedFoodIndex = index;
+        deleteBtn.style.display = 'inline-block'; // Show delete button
     }
 }
 
@@ -156,6 +157,26 @@ function saveFood(event) {
     document.getElementById('foodForm').reset();
     document.querySelector('#foodForm button').textContent = 'Add Food';
     selectedFoodIndex = null;
+    document.getElementById('deleteFoodBtn').style.display = 'none'; // Hide delete button after save
+}
+
+// Delete a food item from the database
+function deleteFoodFromDatabase() {
+    if (selectedFoodIndex === null) {
+        alert('No food selected to delete.');
+        return;
+    }
+    if (confirm('Are you sure you want to delete this food?')) {
+        const foods = getFoods();
+        foods.splice(selectedFoodIndex, 1);
+        saveFoods(foods);
+        alert('Food deleted successfully!');
+        populateFoodDropdown();
+        document.getElementById('foodForm').reset();
+        document.querySelector('#foodForm button').textContent = 'Add Food';
+        selectedFoodIndex = null;
+        document.getElementById('deleteFoodBtn').style.display = 'none'; // Hide delete button
+    }
 }
 
 // Display consumed foods in the summary table and calculate macro percentages
