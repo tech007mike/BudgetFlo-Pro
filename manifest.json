@@ -1,0 +1,21 @@
+{
+  "name": "Nutrition Tracker",
+  "short_name": "NutriTrack",
+  "description": "Track your daily food intake and macronutrients.",
+  "start_url": "/nutrition-tracker/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#28a745",
+  "icons": [
+    {
+      "src": "/nutrition-tracker/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/nutrition-tracker/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
