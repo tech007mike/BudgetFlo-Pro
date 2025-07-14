@@ -38,16 +38,26 @@ function addFood(event) {
 
 // Populate the dropdown with foods
 function populateFoodDropdown() {
-    const selects = document.getElementsByName('foodSelect');
+    // Try to find dropdowns by name first
+    let selects = document.getElementsByName('foodSelect');
+    if (selects.length === 0) {
+        // Fallback to finding by ID if name isn't used
+        const selectById = document.getElementById('foodSelect');
+        selects = selectById ? [selectById] : [];
+    }
+    console.log('Found selects:', selects); // Debug log
     for (let select of selects) {
-        select.innerHTML = '<option value="">Select a food</option>';
-        const foods = getFoods();
-        foods.forEach((food, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = food.name;
-            select.appendChild(option);
-        });
+        if (select) {
+            select.innerHTML = '<option value="">Select a food</option>';
+            const foods = getFoods();
+            console.log('Available foods:', foods); // Debug log
+            foods.forEach((food, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = food.name;
+                select.appendChild(option);
+            });
+        }
     }
 }
 
