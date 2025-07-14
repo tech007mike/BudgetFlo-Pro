@@ -2,23 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Food Database</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nutrition Tracker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Manage Food Database</h1>
-    <form id="foodForm">
-        <label>Food Name: <input type="text" id="foodName" required></label><br>
-        <label>Serving Size: <input type="number" id="servingSize" required></label><br>
-        <label>Serving Type: <input type="text" id="servingType" required></label><br>
-        <label>Fat (g): <input type="number" id="fat" step="0.1" required></label><br>
-        <label>Protein (g): <input type="number" id="protein" step="0.1" required></label><br>
-        <label>Carbs (g): <input type="number" id="carbs" step="0.1" required></label><br>
-        <label>Kcals: <input type="number" id="kcals" required></label><br>
-        <button type="submit">Add Food</button>
-    </form>
-    <button onclick="window.location.href='index.html'">Back to Summary</button>
+    <header>
+        <h1>Nutrition Tracker</h1>
+        <p class="subtitle">Manage Food Database</p>
+    </header>
+    <main>
+        <form id="foodForm">
+            <div class="form-group">
+                <label for="foodName">Food Name:</label>
+                <input type="text" id="foodName" name="foodName" required>
+            </div>
+            <div class="form-group">
+                <label for="servingSize">Serving Size:</label>
+                <input type="number" id="servingSize" name="servingSize" required>
+            </div>
+            <div class="form-group">
+                <label for="servingType">Serving Type:</label>
+                <input type="text" id="servingType" name="servingType" required>
+            </div>
+            <div class="form-group">
+                <label for="fat">Fat (g):</label>
+                <input type="number" id="fat" name="fat" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="protein">Protein (g):</label>
+                <input type="number" id="protein" name="protein" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="carbs">Carbs (g):</label>
+                <input type="number" id="carbs" name="carbs" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="kcals">Kcals:</label>
+                <input type="number" id="kcals" name="kcals" required>
+            </div>
+            <button type="submit">Add Food</button>
+        </form>
+        <button onclick="window.location.href='index.html'" class="back-btn">Back to Summary</button>
+    </main>
     <script src="script.js"></script>
     <script>
         document.getElementById('foodForm').addEventListener('submit', addFood);
