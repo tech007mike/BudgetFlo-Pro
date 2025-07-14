@@ -103,3 +103,17 @@ select {
     border-radius: 5px;
     border: 1px solid #ccc;
 }
+
+#deleteFoodBtn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#deleteFoodBtn:hover {
+    background-color: #c0392b;
+}
