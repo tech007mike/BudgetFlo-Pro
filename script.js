@@ -1,23 +1,64 @@
-// Load foods and consumed foods from localStorage
+// Assuming previous functions like getFoods(), saveFoods(), etc., exist from prior code
+// Example of existing functions (adjust as per your original code):
 function getFoods() {
     return JSON.parse(localStorage.getItem('foods')) || [];
 }
-
-function getConsumedFoods() {
-    return JSON.parse(localStorage.getItem('consumedFoods')) || [];
-}
-
-// Save foods and consumed foods to localStorage
 function saveFoods(foods) {
     localStorage.setItem('foods', JSON.stringify(foods));
 }
 
-function saveConsumedFoods(consumedFoods) {
-    localStorage.setItem('consumedFoods', JSON.stringify(consumedFoods));
+// Variable to track the selected food for editing
+let selectedFoodIndex = null;
+
+// Populate the dropdown with food items
+function populateFoodDropdown() {
+    const select = document.getElementById('foodSelect');
+    select.innerHTML = '<option value="">Add New Food</option>';
+    const foods = getFoods();
+    foods.forEach((food, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = food.name;
+        select.appendChild(option);
+    });
 }
 
-// Add a new food to the database
-function addFood(event) {
+// Handle food selection from dropdown
+function handleFoodSelection() {
+    const select = document.getElementById('foodSelect');
+    const index = select.value;
+    if (index === "") {
+        // Clear form and set to "Add" mode
+        document.getElementById('foodForm').reset();
+        document.querySelector('#foodForm button').textContent = 'Add Food';
+        selectedFoodIndex = null;
+    } else {
+        // Fill form with selected food's data and set to "Update" mode
+        const foods = getFoods();
+        const food = foods[index];
+        document.getElementById('foodName').value = food.name;
+        document.getElementById('servingSize').value = food.servingSize;
+        document.getElementById('servingType').value = food.servingType;
+        document.getElementById('fat').value = food.fat;
+        document.getElementById('protein').value = food.protein;
+        document.getElementById('carbs').value = food.carbs;
+        document.getElementById('kcals').value = food.kcals;
+        document.querySelector('#foodForm button').textContent = 'Update Food';
+        selectedFoodIndex = index;
+    }
+}
+
+// Save food (add or update based on selectedFoodIndex)
+function saveFood(event) {
+    event.preventDefault();
+    const food = {
+        name: document.getElementById('foodName').value,
+        servingSize: parseFloat(document.getElementById('servingSize').value),
+        servingType: document.getElementBy ක
+
+```javascript
+// Save food (add or update based on selectedFoodIndex)
+function saveFood(event) {
     event.preventDefault();
     const food = {
         name: document.getElementById('foodName').value,
@@ -29,106 +70,28 @@ function addFood(event) {
         kcals: parseFloat(document.getElementById('kcals').value)
     };
     const foods = getFoods();
-    foods.push(food);
-    saveFoods(foods);
-    alert('Food added successfully!');
-    document.getElementById('foodForm').reset();
-}
-
-// Populate the dropdown with foods
-function populateFoodDropdown() {
-    const select = document.getElementById('foodSelect');
-    select.innerHTML = '<option value="">Select a food</option>';
-    const foods = getFoods();
-    foods.forEach((food, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = food.name;
-        select.appendChild(option);
-    });
-}
-
-// Consume a selected food
-function consumeFood() {
-    const select = document.getElementById('foodSelect');
-    const quantity = parseFloat(document.getElementById('quantity').value);
-    const foodIndex = select.value;
-    if (!foodIndex || quantity <= 0) {
-        alert('Please select a food and enter a valid quantity.');
-        return;
+    if (selectedFoodIndex === null) {
+        // Add new food
+        foods.push(food);
+        alert('Food added successfully!');
+    } else {
+        // Update existing food
+        foods[selectedFoodIndex] = food;
+        alert('Food updated successfully!');
     }
-    const foods = getFoods();
-    const food = foods[foodIndex];
-    const consumed = {
-        ...food,
-        quantity,
-        fat: food.fat * quantity,
-        protein: food.protein * quantity,
-        carbs: food.carbs * quantity,
-        kcals: food.kcals * quantity
-    };
-    const consumedFoods = getConsumedFoods();
-    consumedFoods.push(consumed);
-    saveConsumedFoods(consumedFoods);
-    alert('Food logged successfully!');
-    document.getElementById('quantity').value = 1;
-    select.value = '';
-    displaySummary(); // Refresh summary after logging
+    saveFoods(foods);
+    // Refresh dropdown and reset form to "Add" mode
+    populateFoodDropdown();
+    document.getElementById('foodForm').reset();
+    document.querySelector('#foodForm button').textContent = 'Add Food';
+    selectedFoodIndex = null;
 }
 
-// Display consumed foods in the summary table and calculate macro percentages
-function displaySummary() {
-    const tbody = document.getElementById('summaryBody');
-    tbody.innerHTML = '';
-    const consumedFoods = getConsumedFoods();
-    
-    // Calculate total kcals from fat, protein, and carbs
-    let totalFatKcals = 0;
-    let totalProteinKcals = 0;
-    let totalCarbsKcals = 0;
-    let totalKcals = 0;
-    
-    consumedFoods.forEach(food => {
-        const fatKcals = food.fat * 9;    // 9 kcals per gram of fat
-        const proteinKcals = food.protein * 4; // 4 kcals per gram of protein
-        const carbsKcals = food.carbs * 4;     // 4 kcals per gram of carbs
-        totalFatKcals += fatKcals;
-        totalProteinKcals += proteinKcals;
-        totalCarbsKcals += carbsKcals;
-        totalKcals += food.kcals;
-    });
-    
-    // Calculate percentages (avoid division by zero)
-    const fatPercentage = totalKcals > 0 ? ((totalFatKcals / totalKcals) * 100).toFixed(1) : 0;
-    const proteinPercentage = totalKcals > 0 ? ((totalProteinKcals / totalKcals) * 100).toFixed(1) : 0;
-    const carbsPercentage = totalKcals > 0 ? ((totalCarbsKcals / totalKcals) * 100).toFixed(1) : 0;
-    
-    // Update macro percentages in the HTML
-    document.getElementById('fatPercentage').textContent = `${fatPercentage}%`;
-    document.getElementById('proteinPercentage').textContent = `${proteinPercentage}%`;
-    document.getElementById('carbsPercentage').textContent = `${carbsPercentage}%`;
-    
-    // Display each food item with a delete button
-    consumedFoods.forEach((food, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${food.name}</td>
-            <td>${food.quantity}</td>
-            <td>${food.servingSize} ${food.servingType}</td>
-            <td>${food.fat.toFixed(1)}</td>
-            <td>${food.protein.toFixed(1)}</td>
-            <td>${food.carbs.toFixed(1)}</td>
-            <td>${food.kcals.toFixed(0)}</td>
-            <td><button onclick="deleteFood(${index})">X</button></td>
-        `;
-        tbody.appendChild(row);
-    });
+// Initialize the database management page
+function initDatabasePage() {
+    populateFoodDropdown();
+    document.getElementById('foodSelect').addEventListener('change', handleFoodSelection);
+    document.getElementById('foodForm').addEventListener('submit', saveFood);
 }
 
-// Delete a food item from the summary and refresh the display
-function deleteFood(index) {
-    const consumedFoods = getConsumedFoods();
-    consumedFoods.splice(index, 1);  // Remove the food item at the specified index
-    saveConsumedFoods(consumedFoods); // Update the stored data
-    displaySummary();                 // Refresh the summary table and percentages
-}
+// [Other existing functions like displaySummary, deleteFood, etc., remain unchanged]
