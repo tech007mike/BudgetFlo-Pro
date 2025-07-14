@@ -46,7 +46,7 @@ function populateFoodDropdown() {
     console.log('Found selects:', selects);
     for (let select of selects) {
         if (select) {
-            select.innerHTML = '<option value="">Select a food</option>';
+            select.innerHTML = '<option value="">Select Food to Edit</option>';
             const foods = getFoods();
             console.log('Available foods:', foods);
             foods.forEach((food, index) => {
