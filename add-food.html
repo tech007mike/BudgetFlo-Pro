@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Log Food</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#28a745">
 </head>
 <body>
     <h1>Log Food</h1>
@@ -21,6 +23,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             populateFoodDropdown();
         });
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/nutrition-tracker/sw.js')
+                .then(() => console.log('Service Worker registered'))
+                .catch((error) => console.error('Service Worker registration failed:', error));
+        }
     </script>
 </body>
 </html>
