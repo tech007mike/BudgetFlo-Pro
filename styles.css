@@ -1,3 +1,4 @@
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -41,38 +42,26 @@ h1 {
     margin: 5px 0;
 }
 
-#summaryContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+#summaryTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
 }
 
-.summary-box {
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+#summaryTable th, #summaryTable td {
     padding: 10px;
-    transition: transform 0.2s;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
-.summary-box:hover {
-    transform: translateY(-2px);
+#summaryTable th {
+    background-color: #f8f9fa;
+    font-weight: bold;
 }
 
-.box-line1, .box-line2 {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-}
-
-.box-line1 span, .box-line2 span {
-    flex: 1;
-    text-align: center;
-    padding: 2px;
-}
-
-.box-line2 button {
+#summaryTable button {
     background-color: #e74c3c;
     color: white;
     border: none;
@@ -84,7 +73,7 @@ h1 {
     transition: background-color 0.2s;
 }
 
-.box-line2 button:hover {
+#summaryTable button:hover {
     background-color: #c0392b;
 }
 
