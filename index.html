@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +12,7 @@
 <body>
     <header>
         <h1>Nutrition Tracker</h1>
-        <p class="subtitle">Daily Summary - Saturday, July 26, 2025, 08:34 PM EDT</p>
+        <p class="subtitle">Daily Summary - Sunday, July 13, 2025, 11:03 PM EDT</p>
     </header>
     <main>
         <div id="macroPercentages">
@@ -20,7 +21,21 @@
             <p>Protein: <span id="proteinPercentage">0%</span></p>
             <p>Carbs: <span id="carbsPercentage">0%</span></p>
         </div>
-        <div id="summaryContainer"></div>
+        <table id="summaryTable">
+            <thead>
+                <tr>
+                    <th>Food Name</th>
+                    <th>Qty</th>
+                    <th>Serving Size</th>
+                    <th>Fat (g)</th>
+                    <th>Protein (g)</th>
+                    <th>Carbs (g)</th>
+                    <th>Kcals</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="summaryBody"></tbody>
+        </table>
         <div class="button-container">
             <button onclick="window.location.href='nutrition-facts.html'">Manage Database</button>
             <button onclick="window.location.href='add-food.html'">Log Food</button>
