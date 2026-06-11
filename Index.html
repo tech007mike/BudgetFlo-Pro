@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BudgetFlow Pro</title>
+
+<style>
+:root{
+  --bg:#0f1220;
+  --card:#1b2035;
+  --card2:#222a44;
+  --text:#fff;
+  --muted:#9aa3b2;
+  --accent:#4da3ff;
+
+  --income:#2ecc71;
+  --expense:#ff5c5c;
+}
+
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text)}
+
+header{text-align:center;padding:18px;font-weight:700}
+
+.container{padding:15px;padding-bottom:90px}
+
+.card{
+  background:var(--card);
+  padding:15px;
+  border-radius:16px;
+  margin-bottom:12px;
+}
+
+.balance{font-size:34px;font-weight:800}
+
+input,select{
+  width:100%;
+  padding:12px;
+  margin:6px 0 12px;
+  border:none;
+  border-radius:10px;
+  background:var(--card2);
+  color:white;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:var(--accent);
+  color:white;
+  font-weight:700;
+}
+
+.tabs{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  background:#14182a;
+}
+
+.tab{
+  flex:1;
+  text-align:center;
+  padding:12px;
+  color:#9aa3b2;
+}
+
+.tab.active{color:#4da3ff;font-weight:700}
+
+.hidden{display:none}
+
+.item{padding:10px;border-bottom:1px solid #2a3355}
+.small{font-size:12px;color:#9aa3b2}
+
+.income{color:var(--income);font-weight:600}
+.expense{color:var(--expense);font-weight:600}
+
+.editBtn{
+  margin-top:8px;
+  background:#2a3355;
+  padding:8px;
+  border-radius:8px;
+  font-size:12px;
+}
+
+.deleteBtn{
+  margin-top:6px;
+  background:#3a1f25;
+  padding:8px;
+  border-radius:8px;
+  font-size:12px;
+}
+
+.actionRow{
+  display:flex;
+  gap:10px;
+}
+
+.actionRow button{
+  flex:1;
+  background:#2a3355;
+}
+</style>
+</head>
+
+<body>
+
+<header>BudgetFlow Pro</header>
+
+<div class="container">
+
+<!-- HOME -->
+<div id="homePage">
+
+  <div class="card">
+    <div class="small">Balance</div>
+    <div id="balance" class="balance">$0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Predicted End of Month Balance</div>
+    <div id="projectedBalance" class="balance">$0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Total Upcoming (This Month)</div>
+    <div id="totalUpcoming" class="balance">$0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Upcoming (This Month)</div>
+    <div id="upcoming"></div>
+  </div>
+
+</div>
+
+<!-- ADD -->
+<div id="addPage" class="hidden">
+
+  <div class="card">
+
+    <label>Transaction Name</label>
+    <input id="transactionName">
+
+    <label>Category</label>
+    <input id="category">
+
+    <label>Type</label>
+    <select id="type">
+      <option value="-">Expense</option>
+      <option value="+">Income</option>
+    </select>
+
+    <label>Amount</label>
+    <input id="amount" type="number" step="0.01">
+
+    <label>Recurrence</label>
+    <select id="frequency" onchange="toggleFreq()">
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="onetime">One-Time</option>
+    </select>
+
+    <div id="weeklyBox">
+      <label>Weekday</label>
+      <select id="weekday">
+        <option value="0">Sun</option>
+        <option value="1">Mon</option>
+        <option value="2">Tue</option>
+        <option value="3">Wed</option>
+        <option value="4">Thu</option>
+        <option value="5">Fri</option>
+        <option value="6">Sat</option>
+      </select>
+    </div>
+
+    <div id="monthlyBox" class="hidden">
+      <label>Day of Month</label>
+      <input id="monthday" type="number" min="1" max="31">
+    </div>
+
+    <div id="onetimeBox" class="hidden">
+      <label>One-Time Day of Month</label>
+      <input id="onetimeDay" type="number" min="1" max="31">
+    </div>
+
+    <button onclick="saveEntry()">Save</button>
+
+  </div>
+</div>
+
+<!-- ENTRIES -->
+<div id="entriesPage" class="hidden"></div>
+
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="show('home')">Home</div>
+  <div class="tab" onclick="show('add')">Add</div>
+  <div class="tab" onclick="show('entries')">Entries</div>
+</div>
+
+<script>
+
+const BASE = 3000;
+let editingId = null;
+
+let entries = JSON.parse(localStorage.getItem("entries") || "[]");
+
+function saveStorage(){
+  localStorage.setItem("entries", JSON.stringify(entries));
+}
+
+/* NAV */
+function show(page){
+  homePage.classList.add("hidden");
+  addPage.classList.add("hidden");
+  entriesPage.classList.add("hidden");
+
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+
+  if(page==="home"){
+    homePage.classList.remove("hidden");
+    document.querySelectorAll(".tab")[0].classList.add("active");
+    renderHome();
+  }
+
+  if(page==="add"){
+    addPage.classList.remove("hidden");
+    document.querySelectorAll(".tab")[1].classList.add("active");
+  }
+
+  if(page==="entries"){
+    entriesPage.classList.remove("hidden");
+    document.querySelectorAll(".tab")[2].classList.add("active");
+    renderEntries();
+  }
+}
+
+/* TOGGLE */
+function toggleFreq(){
+  weeklyBox.classList.toggle("hidden", frequency.value!=="weekly");
+  monthlyBox.classList.toggle("hidden", frequency.value!=="monthly");
+  onetimeBox.classList.toggle("hidden", frequency.value!=="onetime");
+}
+
+/* LABELS (UNCHANGED FEATURE) */
+function getRecurrenceLabel(e){
+
+  if(e.frequency === "weekly"){
+    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    return `Weekly on ${days[e.weekday]}`;
+  }
+
+  if(e.frequency === "monthly"){
+    return `Monthly on ${e.monthday}`;
+  }
+
+  if(e.frequency === "onetime"){
+    return `Once on ${e.onetimeDay}`;
+  }
+
+  return "";
+}
+
+/* SAVE */
+function saveEntry(){
+
+  const entry = {
+    id: editingId || Date.now(),
+    transactionName: transactionName.value.trim(),
+    category: category.value.trim(),
+    type: type.value,
+    amount: Number(amount.value || 0),
+    frequency: frequency.value,
+    weekday: weekday.value,
+    monthday: monthday.value,
+    onetimeDay: onetimeDay.value
+  };
+
+  if(editingId){
+    entries = entries.map(e => e.id === editingId ? entry : e);
+    editingId = null;
+  } else {
+    entries.push(entry);
+  }
+
+  saveStorage();
+  clearForm();
+  show("entries");
+}
+
+/* DELETE */
+function deleteEntry(id){
+  if(!confirm("Delete this entry?")) return;
+  entries = entries.filter(e => e.id !== id);
+  saveStorage();
+  renderEntries();
+  renderHome();
+}
+
+/* EDIT */
+function editEntry(id){
+  const e = entries.find(x => x.id === id);
+  if(!e) return;
+
+  editingId = id;
+
+  transactionName.value = e.transactionName;
+  category.value = e.category;
+  type.value = e.type;
+  amount.value = e.amount;
+  frequency.value = e.frequency;
+  weekday.value = e.weekday || "0";
+  monthday.value = e.monthday || "";
+  onetimeDay.value = e.onetimeDay || "";
+
+  toggleFreq();
+  show("add");
+}
+
+/* CLEAR */
+function clearForm(){
+  transactionName.value = "";
+  category.value = "";
+  type.value = "-";
+  amount.value = "";
+  frequency.value = "weekly";
+  weekday.value = "0";
+  monthday.value = "";
+  onetimeDay.value = "";
+}
+
+/* DATE ENGINE */
+function getDates(e){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+
+  let dates = [];
+
+  if(e.frequency === "monthly"){
+    let d = new Date(y,m,e.monthday);
+    if(d.getMonth() === m) dates.push(d);
+  }
+
+  if(e.frequency === "weekly"){
+    for(let i=1;i<=31;i++){
+      let d = new Date(y,m,i);
+      if(d.getMonth() !== m) break;
+      if(d.getDay() == e.weekday) dates.push(d);
+    }
+  }
+
+  if(e.frequency === "onetime"){
+    let d = new Date(y,m,e.onetimeDay);
+    if(d.getMonth() === m) dates.push(d);
+  }
+
+  return dates;
+}
+
+/* CALC */
+function calc(){
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  let balance = BASE;
+  let upcoming = [];
+  let totalUpcoming = 0;
+
+  entries.forEach(e=>{
+    const sign = e.type === "-" ? -1 : 1;
+
+    getDates(e).forEach(d=>{
+      let val = e.amount * sign;
+
+      if(d <= today) balance += val;
+
+      if(d > today && d <= monthEnd){
+
+        const cls = e.type === "+" ? "income" : "expense";
+
+        upcoming.push({
+          date:d,
+          text:`${e.transactionName} (${e.category})`,
+          amount: val,
+          cls
+        });
+
+        totalUpcoming += val;
+      }
+    });
+  });
+
+  upcoming.sort((a,b)=>a.date-b.date);
+
+  return {
+    balance,
+    upcoming,
+    totalUpcoming,
+    projected: balance + totalUpcoming
+  };
+}
+
+/* EXPORT (RESTORED) */
+function exportData(){
+  const blob = new Blob([JSON.stringify(entries, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "budgetflow.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  if(navigator.share){
+    navigator.share({
+      title:"Budget Export",
+      files:[new File([blob], "budgetflow.json", {type:"application/json"})]
+    }).catch(()=>{});
+  }
+}
+
+/* IMPORT (RESTORED) */
+function importData(e){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(evt){
+    try{
+      const data = JSON.parse(evt.target.result);
+
+      if(Array.isArray(data)){
+        entries = data;
+        saveStorage();
+        renderHome();
+        renderEntries();
+        alert("Import successful");
+      } else {
+        alert("Invalid file");
+      }
+
+    } catch(err){
+      alert("Import failed");
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+/* HOME */
+function renderHome(){
+  const data = calc();
+
+  balance.innerText = `$${data.balance.toFixed(2)}`;
+  totalUpcoming.innerText = `$${data.totalUpcoming.toFixed(2)}`;
+  projectedBalance.innerText = `$${data.projected.toFixed(2)}`;
+
+  upcoming.innerHTML =
+    data.upcoming.map(u=>`
+      <div class="item">
+        <div>
+          ${u.text}
+          <span class="${u.cls}">
+            ${u.amount > 0 ? "+" : ""}$${Math.abs(u.amount).toFixed(2)}
+          </span>
+        </div>
+        <div class="small">${u.date.toDateString()}</div>
+      </div>
+    `).join("") || "<div class='small'>No upcoming</div>";
+}
+
+/* ENTRIES (WITH EXPORT/IMPORT RESTORED + LABELS KEPT) */
+function renderEntries(){
+  entriesPage.innerHTML =
+
+    `<div class="card">
+      <div class="actionRow">
+        <button onclick="exportData()">Export</button>
+        <button onclick="document.getElementById('fileInput').click()">Import</button>
+      </div>
+      <input type="file" id="fileInput" accept="application/json" class="hidden" onchange="importData(event)">
+    </div>` +
+
+    entries.map(e=>`
+      <div class="card">
+
+        <div><b>${e.transactionName}</b></div>
+        <div class="small">${e.category}</div>
+
+        <!-- RECURRENCE LABEL KEPT -->
+        <div class="small">${getRecurrenceLabel(e)}</div>
+
+        <div class="${e.type==='+'?'income':'expense'}">
+          ${e.type}$${e.amount}
+        </div>
+
+        <button class="editBtn" onclick="editEntry(${e.id})">Edit</button>
+        <button class="deleteBtn" onclick="deleteEntry(${e.id})">Delete</button>
+
+      </div>
+    `).join("");
+}
+
+renderHome();
+
+</script>
+
+</body>
+</html>
