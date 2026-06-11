@@ -1,0 +1,193 @@
+[
+  {
+    "id": 1781146893192,
+    "transactionName": "Gables",
+    "category": "Chase Debit Card",
+    "type": "-",
+    "amount": 1500,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "1"
+  },
+  {
+    "id": 1781147333596,
+    "transactionName": "Reliatex",
+    "category": "Chase Debit Card",
+    "type": "+",
+    "amount": 566,
+    "frequency": "weekly",
+    "weekday": "2",
+    "monthday": ""
+  },
+  {
+    "id": 1781149024807,
+    "transactionName": "Duke",
+    "category": "Chase Debit Card",
+    "type": "-",
+    "amount": 150,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "5"
+  },
+  {
+    "id": 1781149078421,
+    "transactionName": "Her Loan",
+    "category": "Chase Debit Card",
+    "type": "-",
+    "amount": 89.86,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "9"
+  },
+  {
+    "id": 1781149132198,
+    "transactionName": "Netflix",
+    "category": "Apple cc",
+    "type": "-",
+    "amount": 9.88,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "20"
+  },
+  {
+    "id": 1781149364338,
+    "transactionName": "His Loan",
+    "category": "Chase Debit Card",
+    "type": "-",
+    "amount": 37.49,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "26"
+  },
+  {
+    "id": 1781149463696,
+    "transactionName": "Subscriptions",
+    "category": "ROBINHOOD cc",
+    "type": "-",
+    "amount": 12.98,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "26"
+  },
+  {
+    "id": 1781149556859,
+    "transactionName": "Savings",
+    "category": "Chase Savings",
+    "type": "-",
+    "amount": 25,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "26"
+  },
+  {
+    "id": 1781149617256,
+    "transactionName": "EOS",
+    "category": "Chase Debit Card",
+    "type": "-",
+    "amount": 35.08,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "27"
+  },
+  {
+    "id": 1781149674659,
+    "transactionName": "Verizon",
+    "category": "Chase Debit Card",
+    "type": "-",
+    "amount": 214,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "28"
+  },
+  {
+    "id": 1781149724955,
+    "transactionName": "Spotify",
+    "category": "Chase cc",
+    "type": "-",
+    "amount": 20.87,
+    "frequency": "monthly",
+    "weekday": "0",
+    "monthday": "30"
+  },
+  {
+    "id": 1781149764776,
+    "transactionName": "Pickett",
+    "category": "Chase Debit Card",
+    "type": "+",
+    "amount": 1097,
+    "frequency": "weekly",
+    "weekday": "5",
+    "monthday": ""
+  },
+  {
+    "id": 1781149857508,
+    "transactionName": "AJ",
+    "category": "Squarecash",
+    "type": "-",
+    "amount": 25,
+    "frequency": "weekly",
+    "weekday": "5",
+    "monthday": ""
+  },
+  {
+    "id": 1781149939647,
+    "transactionName": "Weekly Food",
+    "category": "ROBINHOOD cc",
+    "type": "-",
+    "amount": 200,
+    "frequency": "weekly",
+    "weekday": "5",
+    "monthday": ""
+  },
+  {
+    "id": 1781149964439,
+    "transactionName": "Weekend Food",
+    "category": "ROBINHOOD cc",
+    "type": "-",
+    "amount": 200,
+    "frequency": "weekly",
+    "weekday": "0",
+    "monthday": ""
+  },
+  {
+    "id": 1781150003952,
+    "transactionName": "Gas",
+    "category": "ROBINHOOD cc",
+    "type": "-",
+    "amount": 108,
+    "frequency": "weekly",
+    "weekday": "0",
+    "monthday": ""
+  },
+  {
+    "id": 1781150056745,
+    "transactionName": "Koizi lunch",
+    "category": "ROBINHOOD cc",
+    "type": "-",
+    "amount": 61.5,
+    "frequency": "weekly",
+    "weekday": "0",
+    "monthday": ""
+  },
+  {
+    "id": 1781150598331,
+    "transactionName": "New York Trip",
+    "category": "ROBINHOOD cc",
+    "type": "-",
+    "amount": 300,
+    "frequency": "weekly",
+    "weekday": "5",
+    "monthday": ""
+  },
+  {
+    "id": 1781152359582,
+    "transactionName": "Tattoo",
+    "category": "ROBINHOOD cc",
+    "type": "-",
+    "amount": 400,
+    "frequency": "onetime",
+    "weekday": "0",
+    "monthday": "",
+    "onetimeDay": "4"
+  }
+]
