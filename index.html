@@ -18,13 +18,31 @@
   --expense:#ff5c5c;
 }
 
-*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-body{margin:0;background:var(--bg);color:var(--text)}
+*{
+  box-sizing:border-box;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif
+}
 
-header{text-align:center;padding:18px;font-weight:700}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+}
 
-.container{padding:15px;padding-bottom:90px}
+/* HEADER */
+header{
+  text-align:center;
+  padding:18px;
+  font-weight:700;
+}
 
+/* MAIN CONTAINER */
+.container{
+  padding:15px;
+  padding-bottom:110px;
+}
+
+/* CARDS */
 .card{
   background:var(--card);
   padding:15px;
@@ -32,8 +50,22 @@ header{text-align:center;padding:18px;font-weight:700}
   margin-bottom:12px;
 }
 
-.balance{font-size:34px;font-weight:800}
+/* HOME TOP ROW BALANCES */
+.row{
+  display:flex;
+  gap:10px;
+}
 
+.half{
+  flex:1;
+}
+
+.balance{
+  font-size:26px;
+  font-weight:800;
+}
+
+/* INPUTS */
 input,select{
   width:100%;
   padding:12px;
@@ -54,6 +86,7 @@ button{
   font-weight:700;
 }
 
+/* TABS FIXED */
 .tabs{
   position:fixed;
   bottom:0;
@@ -61,6 +94,9 @@ button{
   right:0;
   display:flex;
   background:#14182a;
+  z-index:10;
+  height:70px;
+  padding-bottom:env(safe-area-inset-bottom);
 }
 
 .tab{
@@ -70,16 +106,36 @@ button{
   color:#9aa3b2;
 }
 
-.tab.active{color:#4da3ff;font-weight:700}
+.tab.active{
+  color:#4da3ff;
+  font-weight:700;
+}
 
 .hidden{display:none}
 
-.item{padding:10px;border-bottom:1px solid #2a3355}
-.small{font-size:12px;color:#9aa3b2}
+/* LIST ITEM */
+.item{
+  padding:10px;
+  border-bottom:1px solid #2a3355;
+}
+
+/* UPCOMING ROW */
+.upRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.small{
+  font-size:12px;
+  color:#9aa3b2;
+}
 
 .income{color:var(--income);font-weight:600}
 .expense{color:var(--expense);font-weight:600}
 
+/* ACTION BUTTONS */
 .editBtn{
   margin-top:8px;
   background:#2a3355;
@@ -117,14 +173,19 @@ button{
 <!-- HOME -->
 <div id="homePage">
 
-  <div class="card">
-    <div class="small">Balance</div>
-    <div id="balance" class="balance">$0.00</div>
-  </div>
+  <!-- BALANCE ROW SIDE BY SIDE -->
+  <div class="row">
 
-  <div class="card">
-    <div class="small">Predicted End of Month Balance</div>
-    <div id="projectedBalance" class="balance">$0.00</div>
+    <div class="card half">
+      <div class="small">Balance</div>
+      <div id="balance" class="balance">$0.00</div>
+    </div>
+
+    <div class="card half">
+      <div class="small">Predicted End of Month</div>
+      <div id="projectedBalance" class="balance">$0.00</div>
+    </div>
+
   </div>
 
   <div class="card">
@@ -199,6 +260,7 @@ button{
 
 </div>
 
+<!-- TABS -->
 <div class="tabs">
   <div class="tab active" onclick="show('home')">Home</div>
   <div class="tab" onclick="show('add')">Add</div>
@@ -249,7 +311,7 @@ function toggleFreq(){
   onetimeBox.classList.toggle("hidden", frequency.value!=="onetime");
 }
 
-/* LABELS (UNCHANGED FEATURE) */
+/* LABEL */
 function getRecurrenceLabel(e){
 
   if(e.frequency === "weekly"){
@@ -365,7 +427,7 @@ function getDates(e){
   return dates;
 }
 
-/* CALC */
+/* CALC WITH RUNNING BALANCE */
 function calc(){
 
   const now = new Date();
@@ -386,13 +448,11 @@ function calc(){
 
       if(d > today && d <= monthEnd){
 
-        const cls = e.type === "+" ? "income" : "expense";
-
         upcoming.push({
           date:d,
           text:`${e.transactionName} (${e.category})`,
           amount: val,
-          cls
+          cls: e.type === "+" ? "income" : "expense"
         });
 
         totalUpcoming += val;
@@ -402,15 +462,21 @@ function calc(){
 
   upcoming.sort((a,b)=>a.date-b.date);
 
+  let running = balance;
+  upcoming = upcoming.map(u=>{
+    running += u.amount;
+    return {...u, balanceAfter: running};
+  });
+
   return {
     balance,
     upcoming,
     totalUpcoming,
-    projected: balance + totalUpcoming
+    projected: running
   };
 }
 
-/* EXPORT (RESTORED) */
+/* EXPORT */
 function exportData(){
   const blob = new Blob([JSON.stringify(entries, null, 2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
@@ -430,7 +496,7 @@ function exportData(){
   }
 }
 
-/* IMPORT (RESTORED) */
+/* IMPORT */
 function importData(e){
   const file = e.target.files[0];
   if(!file) return;
@@ -470,18 +536,18 @@ function renderHome(){
   upcoming.innerHTML =
     data.upcoming.map(u=>`
       <div class="item">
-        <div>
-          ${u.text}
-          <span class="${u.cls}">
-            ${u.amount > 0 ? "+" : ""}$${Math.abs(u.amount).toFixed(2)}
-          </span>
+        <div class="upRow">
+          <div>
+            <div>${u.text} <span class="${u.cls}">${u.amount>0?"+":""}$${Math.abs(u.amount).toFixed(2)}</span></div>
+            <div class="small">${u.date.toDateString()}</div>
+          </div>
+          <div class="small">$${u.balanceAfter.toFixed(2)}</div>
         </div>
-        <div class="small">${u.date.toDateString()}</div>
       </div>
     `).join("") || "<div class='small'>No upcoming</div>";
 }
 
-/* ENTRIES (WITH EXPORT/IMPORT RESTORED + LABELS KEPT) */
+/* ENTRIES */
 function renderEntries(){
   entriesPage.innerHTML =
 
@@ -498,8 +564,6 @@ function renderEntries(){
 
         <div><b>${e.transactionName}</b></div>
         <div class="small">${e.category}</div>
-
-        <!-- RECURRENCE LABEL KEPT -->
         <div class="small">${getRecurrenceLabel(e)}</div>
 
         <div class="${e.type==='+'?'income':'expense'}">
